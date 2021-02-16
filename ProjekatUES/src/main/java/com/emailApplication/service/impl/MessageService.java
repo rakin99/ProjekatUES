@@ -51,7 +51,7 @@ public class MessageService implements com.emailApplication.service.MessageServi
 		MyMessage mess=null;
 		try {
 			mess = messageRepository.save(message);
-			indexNewMessage();
+			indexNewMessage(mess);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -99,14 +99,16 @@ public class MessageService implements com.emailApplication.service.MessageServi
 		return messageRepository.findAllByToReciver(email);
 	}
 	
-	private void indexNewMessage() throws IOException{
+	private void indexNewMessage(MyMessage message) throws IOException{
 		Indexer indexer = Indexer.getInstance();
-		List<MyMessage> messages = messageRepository.findAll();
+		//List<MyMessage> messages = messageRepository.findAll();
 		//System.out.println("\n\tIndeksiram...");
-		for (MyMessage message : messages) {
-			IndexMessage indexMessage = new IndexMessage();
+		//for (MyMessage message : messages) {
+			IndexMessage indexMessage;
 			if(!message.getAttachment_location().isEmpty()) {
 				indexMessage = Indexer.getInstance().getHandler(message.getAttachment_location()).getIndexMessage(new File(message.getAttachment_location()));
+			}else {
+				indexMessage = new IndexMessage();
 			}
 			indexMessage.setId(message.getId());
 	     	indexMessage.setSubject(message.getSubject());
@@ -116,6 +118,6 @@ public class MessageService implements com.emailApplication.service.MessageServi
 	     	//System.out.println(indexMessage.toString());
 	     	//indexUnit.setKeywords(new ArrayList<String>(Arrays.asList(model.getKeywords().split(" "))));
 	     	indexer.add(indexMessage.getLuceneDocument());
-		}
+		//}
 }
 }

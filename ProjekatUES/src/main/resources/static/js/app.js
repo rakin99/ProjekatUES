@@ -448,7 +448,7 @@ function timer(){
 		var day = new Date().getDate();
 		var h= new Date().getHours();
 		var m= new Date().getMinutes();
-		var s= new Date().getSeconds()+30;
+		var s= new Date().getSeconds()+10;
 		var countDownDate = new Date(year,month,day,h,m,s).getTime();
 
 		// Update the count down every 1 second

@@ -26,7 +26,7 @@ public class TextDocHandler extends DocumentHandler {
 			reader = new BufferedReader(new InputStreamReader(
 					fis, "UTF8"));
 
-			String firstLine = reader.readLine(); // u prvoj liniji svake
+			//String firstLine = reader.readLine(); // u prvoj liniji svake
 													// tekstualne datoteke se
 													// nalazi naslov rada
 
@@ -36,17 +36,18 @@ public class TextDocHandler extends DocumentHandler {
 			 * add other custom metadata
 			 */
 
-			String secondLine = reader.readLine();
+			String line = reader.readLine();
 //			String[] keywords = secondLine.split(";");
 //			retVal.setKeywords(new ArrayList<String>(Arrays.asList(keywords)));
 
-			String fullText = "";
+			String fullText = " " + line;
+			System.out.println("line: "+line);
 			while (true) {
-				secondLine = reader.readLine();
-				if (secondLine == null) {
+				line = reader.readLine();
+				if (line == null) {
 					break;
 				}
-				fullText += " " + secondLine;
+				fullText += " " + line;
 			}
 			retVal.setAttachment_content(fullText);
 			

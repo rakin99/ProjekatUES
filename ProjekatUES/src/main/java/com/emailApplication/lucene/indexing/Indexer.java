@@ -48,7 +48,7 @@ public class Indexer {
 		System.out.println("PATH: " + path);
 		IndexWriterConfig iwc = new IndexWriterConfig(new SerbianAnalyzer());
 		if(restart){
-			iwc.setOpenMode(OpenMode.CREATE);
+			iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		}else{
 			iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		}
