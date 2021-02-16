@@ -50,6 +50,9 @@ public class MyMessage {
 	@Column(name="active", unique = false, nullable = false)
 	private boolean active;
 	
+	@Column(name="attachment_location", unique = false, nullable = false)
+	private String attachment_location;
+	
 	@ManyToOne
 	@JoinColumn(name="account_id", referencedColumnName="account_id", nullable=false)
 	private Account account;
@@ -64,6 +67,7 @@ public class MyMessage {
 		this.dateTime=new GregorianCalendar();
 		this.subject="";
 		this.unread=true;
+		this.attachment_location="";
 		active=true;
 	}
 
@@ -154,9 +158,20 @@ public class MyMessage {
 	public void setAccount(Account account) {
 		this.account = account;
 	}
+	
+	public String getAttachment_location() {
+		return attachment_location;
+	}
 
+	public void setAttachment_location(String attachment_location) {
+		this.attachment_location = attachment_location;
+	}
+
+	@Override
 	public String toString() {
-	    return "(Message)[\nid="+id+",_from="+from+",_to="+toReciver+",_cc="+ccReciver+",_bcc="+bccReciver+",dateTime="+dateTime+
-	    		",subject="+subject+",content="+content+",unread="+unread+"]";
-	  }
+		return "MyMessage [id=" + id + ", from=" + from + ", toReciver=" + toReciver + ", ccReciver=" + ccReciver
+				+ ", bccReciver=" + bccReciver + ", dateTime=" + dateTime + ", subject=" + subject + ", content="
+				+ content + ", unread=" + unread + ", active=" + active + ", attachment_location=" + attachment_location
+				+ ", account=" + account + "]";
+	}
 }

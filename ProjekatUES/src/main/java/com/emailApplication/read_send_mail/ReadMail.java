@@ -142,31 +142,31 @@ public class ReadMail{
 		    String content="";
 		    // suppose 'message' is an object of type Message
 		    String contentType = m.getContentType();
-		    String attachFiles = "";
+		    
 		    if (contentType.contains("multipart")) {
 	        // this message may contain attachment
 		    	Multipart multiPart = (Multipart) m.getContent();
-		    	 
+		    	
 		    	for (int j = 0; j < multiPart.getCount(); j++) {
 		    	    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(j);
 		    	    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
 		    	        // this part is attachment
 		    	    	// this part is attachment
                         String fileName = part.getFileName();
-                        attachFiles += fileName + ", ";
+                     
                         part.saveFile(DATA_DIR_PATH + File.separator + fileName);
+                        System.out.println(DATA_DIR_PATH + "/" + fileName);
+                        message.setAttachment_location(DATA_DIR_PATH + "/" + fileName);
 		    	    } else {
-		    	    	content = part.getContent().toString();
+		    	    	content = getTextFromMimeMultipart(multiPart);
+		    	    	System.out.println("Text je: "+getTextFromMimeMultipart(multiPart)); 
 		    	    }
 		    	}
-		    	System.out.println("\n\t attachFiles: "+attachFiles);
 		    }
-		    else if (m.isMimeType("text/plain")) {
-		    	content = message.getContent().toString();
-		    } 
-		    else if (m.isMimeType("multipart/*")) {
-		        MimeMultipart mimeMultipart = (MimeMultipart) m.getContent();
-		        content = getTextFromMimeMultipart(mimeMultipart);
+		    else if (contentType.contains("text/plain")) {
+                if (m.getContent() != null) {
+                    content = m.getContent().toString();
+                }
 		    }
 //		    System.out.println("Duzina contenta: "+content.length());
 //		    System.out.println("Content: "+content);
@@ -191,7 +191,7 @@ public class ReadMail{
  }
  
  public static String getTextFromMimeMultipart(
-	        MimeMultipart mimeMultipart)  throws MessagingException, IOException{
+	        Multipart mimeMultipart)  throws MessagingException, IOException{
 	    String result = "";
 	    int count = mimeMultipart.getCount();
 	    for (int i = 0; i < count; i++) {
@@ -202,8 +202,8 @@ public class ReadMail{
 	        } else if (bodyPart.isMimeType("text/html")) {
 	            String html = (String) bodyPart.getContent();
 	            result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
-	        } else if (bodyPart.getContent() instanceof MimeMultipart){
-	            result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+	        } else if (bodyPart.getContent() instanceof Multipart){
+	            result = result + getTextFromMimeMultipart((Multipart)bodyPart.getContent());
 	        }
 	    }
 	    return result;
