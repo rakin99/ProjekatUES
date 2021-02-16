@@ -5,6 +5,7 @@ var showMessages = false;
 var showMessageForm = false;
 var allAccounts = false;
 var createMessage = false;
+var showOneMessage = false;
 var messages = [];
 //var roles;
 
@@ -202,6 +203,12 @@ function showCreateMessage() {
 	}
 }
 
+function closeMessage(){
+	var oneMessage=$('#oneMessage');
+	oneMessage.hide();
+	showMessagesTable();
+}
+
 function changeActive(username) {
 	
 	console.log("email: "+username);
@@ -346,10 +353,12 @@ function download(filename, text) {
 
 function showMessagesTable(){
 	var meessagesTable = $('#messagesTable');
+	var oneMessage=$('#oneMessage');
 	showMessages=!showMessages;
 	if(showMessages){
 		getMessages();
 		timer();
+		oneMessage.hide()
 	}else{
 		meessagesTable.hide();
 	}
@@ -380,7 +389,7 @@ function getMessages() {
 						'<tr>' +  
 							'<td>' + messages[it].fromSender + '</td>' + 
 							'<td>' + messages[it].toReciver + '</td>' +
-							'<td>' + messages[it].subject + '</td>' +
+							'<td> <div onClick="getMessageById(\''+messages[it].id+'\')">' + messages[it].subject + "</div></td>" +
 							'<td>' + messages[it].content.substring(0,30) + "..." + '</td>' +
 						'</tr>'
 								)	
@@ -520,9 +529,8 @@ function searchMessages(){
 					"<tr>" +
 						"<td>" + result.fromSender + "</td>" +
 						"<td>" + result.toReciver + "</td>" +
-						"<td>" + result.subject + "</td>" +
+						'<td> <div onClick="getMessageById(\''+result.id+'\')">' + result.subject + "</div></td>" +
 						"<td>" + result.content.substring(0, 30) + "..." + "</td>" +
-						"<td>" + result.id + "</td>" +
 					"</tr>"
 					);
             }
@@ -575,4 +583,54 @@ function ElementForSort(element){
 		messages.sort((a, b) => (a.content > b.content) ? 1 : -1);
 		showTableForMessages();
 	}
+}
+
+function getMessageById(id){
+	showMessages=false;
+	$('#messagesTable').hide();
+	var oneMessage=$('#oneMessage');
+	var attachment=$('#attachment');
+	var fromSender=$('#emailSenderOneMessage');
+	var toReciver=$('#emailRecieverOneMessage');
+	var subject=$('#subjectOneMessage');
+	var content=$('#contentOneMessage');
+	console.log("getMessageById \n Id: "+id);
+	var data = JSON.stringify({
+		"field":"id",
+		"value":id
+	});
+	$.ajax({
+        type: "POST",
+        url: "messages/search",
+        data: data,
+        contentType: 'application/json',
+        success: function (data) {
+            for(index = 0; index < data.length; index++){
+                var result = data[index];
+				//console.log(result);
+				fromSender.val(result.fromSender);
+				toReciver.val(result.toReciver);
+				subject.val(result.subject);
+				content.val(result.content);
+				if(result.path!=null){
+					attachment.empty()
+					var filename = result.path.substring(68,result.path.length);
+					attachment.append('\nAttachment: <a href="\''+result.path+'\'" download="\''+result.path+'\'">'+filename+'</a>');
+				}else{
+					attachment.empty()
+				}
+            }
+			oneMessage.show()
+            //console.log("SUCCESS : ", messages);
+            //$("#btnSubmitLuceneQueryLanguage").prop("disabled", false);
+
+        },
+        error: function (e) {
+        	$('#result').find('tr:gt(1)').remove();
+            $("#result").text(e.responseText);
+            console.log("ERROR : ", e);
+            //$("#btnSubmitLuceneQueryLanguage").prop("disabled", false);
+
+        }
+    });
 }

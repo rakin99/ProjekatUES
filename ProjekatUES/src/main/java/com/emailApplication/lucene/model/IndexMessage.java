@@ -93,6 +93,7 @@ public class IndexMessage {
 		retVal.add(new TextField("content",content, Store.YES));
 		retVal.add(new StringField("id",id, Store.YES));
 		if(!path.isEmpty()) {
+			System.out.println("Postavljam putanju: "+path);
 			retVal.add(new StringField("path",path, Store.YES));
 		}
 		retVal.add(new TextField("attachment_content", attachment_content, Store.YES));

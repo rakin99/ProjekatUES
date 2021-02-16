@@ -71,8 +71,9 @@ public class ResultRetriever {
 				String content = doc.get("content");
 				String fromSender = doc.get("fromSender");
 				String toReciver = doc.get("toReciver");
+				String path = doc.get("path");
 				String id = doc.get("id");
-				rd = new ResultData(subject, content, id, fromSender, toReciver);
+				rd = new ResultData(subject, content, id, fromSender, toReciver, path);
 				results.add(rd);
 			}
 			reader.close();

@@ -7,18 +7,28 @@ public final class ResultData {
 	private String id;
 	private String fromSender;
 	private String toReciver;
+	private String path;
 	
 	public ResultData() {
 		super();
 	}
 
-	public ResultData(String subject, String content, String id, String fromSender, String toReciver) {
+	public ResultData(String subject, String content, String id, String fromSender, String toReciver, String path) {
 		super();
 		this.subject = subject;
 		this.content = content;
 		this.id = id;
 		this.fromSender = fromSender;
 		this.toReciver = toReciver;
+		this.path = path;
+	}
+	
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public String getSubject() {

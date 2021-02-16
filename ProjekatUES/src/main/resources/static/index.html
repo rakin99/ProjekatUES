@@ -140,6 +140,7 @@
 						  <th><div class="btn btn-light" onclick="ElementForSort('to')" id="idTo">To</div></th>
 						  <th><div class="btn btn-light" onclick="ElementForSort('subject')" id="idSubject">Subject</div></th>
 						  <th><div class="btn btn-light" onclick="ElementForSort('content')" id="idContent">Content</div></th>
+						  
 					  </tr>
 				  </thead>
 				  <tbody>
@@ -147,10 +148,21 @@
 					  </tr>
 				  </tbody>
 			  </table>
-			  
+			  <!--Message -->
+				<div id="oneMessage" style="display:none;">
+					From:<input cols="6" type="email" readonly class="form-control" id="emailSenderOneMessage"> <br/>
+					To: <input cols="6" type="email" readonly class="form-control" id="emailRecieverOneMessage"> <br/>
+					Subject:<input type="text" class="form-control" id="subjectOneMessage" placeholder="Subject"> <br/>
+					Content:<textarea rows="10" class="form-control" id="contentOneMessage" rows="3" placeholder="Content"></textarea>
+					<div style="float: right;">
+						<button type="button" onclick="closeMessage()" style="text-align: right;" class="btn btn-primary">Close message</button>
+					</div>
+					<div id="attachment">
+
+					</div>
+				</div>
 			</div>
 		</div>
-
 	<br/>
 		<!-- Add account  -->
 		<div class="card">
@@ -196,10 +208,8 @@
 				</table>
 			</div>
 		</div>
-		  
-		  <br/>
-	    
-	    
+		<br/>
+		
 	    <div class="card">
 	      <div class="card-header">
 		      	<button type="button" onclick="logout()" class="btn btn-primary" style="margin-right:1.25em;">Log out</button>
