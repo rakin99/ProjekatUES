@@ -181,7 +181,7 @@ public class Indexer {
 						System.out.println("Nije moguce indeksirati dokument sa nazivom: " + fileName);
 						continue;
 					}
-					this.indexWriter.addDocument(handler.getIndexUnit(newFile).getLuceneDocument());
+					this.indexWriter.addDocument(handler.getIndexMessage(newFile).getLuceneDocument());
 				} else if (newFile.isDirectory()){
 					index(newFile);
 				}

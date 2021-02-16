@@ -12,12 +12,13 @@ import org.apache.lucene.document.DateTools;
 import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 
+import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.lucene.model.IndexUnit;
 
 public class WordHandler extends DocumentHandler {
 
-	public IndexUnit getIndexUnit(File file) {
-		IndexUnit retVal = new IndexUnit();
+	public IndexMessage getIndexMessage(File file) {
+		IndexMessage retVal = new IndexMessage();
 		InputStream is;
 
 		try {
@@ -25,22 +26,22 @@ public class WordHandler extends DocumentHandler {
 			// pomocu WordExtractor objekta izvuci tekst
 			WordExtractor we = new WordExtractor(is);
 			String text = we.getText();
-			retVal.setText(text);
+			retVal.setAttachment_content(text);
 			
 			// pomocu SummaryInformation objekta izvuci ostale metapodatke
-			SummaryInformation si = we.getSummaryInformation();
-			String title = si.getTitle();
+//			SummaryInformation si = we.getSummaryInformation();
+//			String title = si.getTitle();
 			//retVal.setTitle(title);
 
-			String keywords = si.getKeywords();
-			if(keywords != null){
-				String[] splittedKeywords = keywords.split(" ");
-				retVal.setKeywords(new ArrayList<String>(Arrays.asList(splittedKeywords)));
-			}
+//			String keywords = si.getKeywords();
+//			if(keywords != null){
+//				String[] splittedKeywords = keywords.split(" ");
+//				retVal.setKeywords(new ArrayList<String>(Arrays.asList(splittedKeywords)));
+//			}
 			
-			retVal.setFilename(file.getCanonicalPath());
+			retVal.setPath(file.getCanonicalPath());
 			
-			String modificationDate=DateTools.dateToString(new Date(file.lastModified()),DateTools.Resolution.DAY);
+			//String modificationDate=DateTools.dateToString(new Date(file.lastModified()),DateTools.Resolution.DAY);
 			//retVal.setFiledate(modificationDate);
 			
 			we.close();

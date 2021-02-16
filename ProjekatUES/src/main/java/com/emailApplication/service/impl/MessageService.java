@@ -1,5 +1,6 @@
 package com.emailApplication.service.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -14,7 +15,8 @@ import com.emailApplication.lucene.indexing.Indexer;
 import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.model.Account;
 import com.emailApplication.model.MyMessage;
-import com.emailApplication.repository.MessageRepository; 
+import com.emailApplication.repository.MessageRepository;
+ 
 
 @Service
 public class MessageService implements com.emailApplication.service.MessageService{
@@ -103,6 +105,9 @@ public class MessageService implements com.emailApplication.service.MessageServi
 		//System.out.println("\n\tIndeksiram...");
 		for (MyMessage message : messages) {
 			IndexMessage indexMessage = new IndexMessage();
+			if(!message.getAttachment_location().isEmpty()) {
+				indexMessage = Indexer.getInstance().getHandler(message.getAttachment_location()).getIndexMessage(new File(message.getAttachment_location()));
+			}
 			indexMessage.setId(message.getId());
 	     	indexMessage.setSubject(message.getSubject());
 	     	indexMessage.setContent(message.getContent());

@@ -155,15 +155,16 @@ public class ReadMail{
                         String fileName = part.getFileName();
                      
                         part.saveFile(DATA_DIR_PATH + File.separator + fileName);
-                        System.out.println(DATA_DIR_PATH + "/" + fileName);
+                       // System.out.println(DATA_DIR_PATH + "/" + fileName);
                         message.setAttachment_location(DATA_DIR_PATH + "/" + fileName);
 		    	    } else {
 		    	    	content = getTextFromMimeMultipart(multiPart);
-		    	    	System.out.println("Text je: "+getTextFromMimeMultipart(multiPart)); 
+		    	    	//System.out.println("Text je: "+getTextFromMimeMultipart(multiPart)); 
 		    	    }
 		    	}
 		    }
-		    else if (contentType.contains("text/plain")) {
+		    else if (contentType.contains("text/plain")
+                    || contentType.contains("text/html")) {
                 if (m.getContent() != null) {
                     content = m.getContent().toString();
                 }

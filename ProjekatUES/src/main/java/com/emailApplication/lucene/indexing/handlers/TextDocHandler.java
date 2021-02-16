@@ -12,13 +12,14 @@ import java.util.Date;
 
 import org.apache.lucene.document.DateTools;
 
+import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.lucene.model.IndexUnit;
 
 public class TextDocHandler extends DocumentHandler {
 
 	@Override
-	public IndexUnit getIndexUnit(File file) {
-		IndexUnit retVal = new IndexUnit();
+	public IndexMessage getIndexMessage(File file) {
+		IndexMessage retVal = new IndexMessage();
 		BufferedReader reader = null;
 		try {
 			FileInputStream fis = new FileInputStream(file);
@@ -36,8 +37,8 @@ public class TextDocHandler extends DocumentHandler {
 			 */
 
 			String secondLine = reader.readLine();
-			String[] keywords = secondLine.split(";");
-			retVal.setKeywords(new ArrayList<String>(Arrays.asList(keywords)));
+//			String[] keywords = secondLine.split(";");
+//			retVal.setKeywords(new ArrayList<String>(Arrays.asList(keywords)));
 
 			String fullText = "";
 			while (true) {
@@ -47,11 +48,11 @@ public class TextDocHandler extends DocumentHandler {
 				}
 				fullText += " " + secondLine;
 			}
-			retVal.setText(fullText);
+			retVal.setAttachment_content(fullText);
 			
-			retVal.setFilename(file.getCanonicalPath());
+			retVal.setPath(file.getCanonicalPath());
 			
-			String modificationDate=DateTools.dateToString(new Date(file.lastModified()),DateTools.Resolution.DAY);
+			//String modificationDate=DateTools.dateToString(new Date(file.lastModified()),DateTools.Resolution.DAY);
 			//retVal.setFiledate(modificationDate);
 
 			return retVal;

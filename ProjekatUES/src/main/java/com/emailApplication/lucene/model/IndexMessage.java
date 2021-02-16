@@ -15,7 +15,20 @@ public class IndexMessage {
 	private String toReciver;
 	private String subject;
 	private String content;
+	private String path;
+	private String attachment_content;
 	
+	public IndexMessage() {
+		super();
+		this.id = "";
+		this.fromSender = "";
+		this.toReciver = "";
+		this.subject = "";
+		this.content = "";
+		this.path = "";
+		this.attachment_content = "";
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -56,6 +69,22 @@ public class IndexMessage {
 		this.content = content;
 	}
 
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getAttachment_content() {
+		return attachment_content;
+	}
+
+	public void setAttachment_content(String attachment_content) {
+		this.attachment_content = attachment_content;
+	}
+
 	public Document getLuceneDocument(){
 		Document retVal = new Document();
 		retVal.add(new TextField("fromSender", fromSender, Store.YES));
@@ -63,13 +92,11 @@ public class IndexMessage {
 		retVal.add(new TextField("subject", subject, Store.YES));
 		retVal.add(new TextField("content",content, Store.YES));
 		retVal.add(new StringField("id",id, Store.YES));
+		if(!path.isEmpty()) {
+			retVal.add(new StringField("path",path, Store.YES));
+		}
+		retVal.add(new TextField("attachment_content", attachment_content, Store.YES));
 		return retVal;
 	}
 
-	@Override
-	public String toString() {
-		return "IndexMessage [id=" + id + ", fromSender=" + fromSender + ", toReciver=" + toReciver + ", subject="
-				+ subject + ", content=" + content + "]";
-	}
-	
 }

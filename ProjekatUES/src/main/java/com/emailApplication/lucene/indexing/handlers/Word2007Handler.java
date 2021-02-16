@@ -11,34 +11,35 @@ import org.apache.poi.POIXMLProperties;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
+import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.lucene.model.IndexUnit;
 
 public class Word2007Handler extends DocumentHandler {
 
-	public IndexUnit getIndexUnit(File file) {
-		IndexUnit retVal = new IndexUnit();
+	public IndexMessage getIndexMessage(File file) {
+		IndexMessage retVal = new IndexMessage();
 
 		try {
 			XWPFDocument wordDoc = new XWPFDocument(new FileInputStream(file));
 			XWPFWordExtractor we = new XWPFWordExtractor(wordDoc);
 
 			String text = we.getText();
-			retVal.setText(text);
+			retVal.setAttachment_content(text);
 
-			POIXMLProperties props = wordDoc.getProperties();
+			//POIXMLProperties props = wordDoc.getProperties();
 
-			String title = props.getCoreProperties().getTitle();
-			//retVal.setTitle(title);
-
-			String keywords = props.getCoreProperties()
-					.getUnderlyingProperties().getKeywordsProperty().getValue();
-			if(keywords != null){
-				String[] splittedKeywords = keywords.split(" ");
-				retVal.setKeywords(new ArrayList<String>(Arrays.asList(splittedKeywords)));
-			}
-			retVal.setFilename(file.getCanonicalPath());
+//			String title = props.getCoreProperties().getTitle();
+//			//retVal.setTitle(title);
+//
+//			String keywords = props.getCoreProperties()
+//					.getUnderlyingProperties().getKeywordsProperty().getValue();
+//			if(keywords != null){
+//				String[] splittedKeywords = keywords.split(" ");
+//				retVal.setKeywords(new ArrayList<String>(Arrays.asList(splittedKeywords)));
+//			}
+			retVal.setPath(file.getCanonicalPath());
 			
-			String modificationDate=DateTools.dateToString(new Date(file.lastModified()),DateTools.Resolution.DAY);
+			//String modificationDate=DateTools.dateToString(new Date(file.lastModified()),DateTools.Resolution.DAY);
 			//retVal.setFiledate(modificationDate);
 			
 			we.close();

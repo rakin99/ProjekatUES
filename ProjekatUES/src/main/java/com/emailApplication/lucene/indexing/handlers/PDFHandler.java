@@ -13,38 +13,39 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.lucene.model.IndexUnit;
 
 public class PDFHandler extends DocumentHandler {
 
 	@Override
-	public IndexUnit getIndexUnit(File file) {
-		IndexUnit retVal = new IndexUnit();
+	public IndexMessage getIndexMessage(File file) {
+		IndexMessage retVal = new IndexMessage();
 		try {
 			PDFParser parser = new PDFParser(new RandomAccessFile(file, "r"));
 			parser.parse();
 			String text = getText(parser);
-			retVal.setText(text);
+			retVal.setAttachment_content(text);
 
 			// metadata extraction
-			PDDocument pdf = parser.getPDDocument();
-			PDDocumentInformation info = pdf.getDocumentInformation();
+			//PDDocument pdf = parser.getPDDocument();
+			//PDDocumentInformation info = pdf.getDocumentInformation();
 
-			String title = ""+info.getTitle();
+			//String title = ""+info.getTitle();
 			//retVal.setS(title);
 
-			String keywords = ""+info.getKeywords();
-			if(keywords != null){
-				String[] splittedKeywords = keywords.split(" ");
-				retVal.setKeywords(new ArrayList<String>(Arrays.asList(splittedKeywords)));
-			}
+			//String keywords = ""+info.getKeywords();
+//			if(keywords != null){
+//				String[] splittedKeywords = keywords.split(" ");
+//				retVal.setKeywords(new ArrayList<String>(Arrays.asList(splittedKeywords)));
+//			}
 			
-			retVal.setFilename(file.getCanonicalPath());
+			retVal.setPath(file.getCanonicalPath());
 			
-			String modificationDate=DateTools.dateToString(new Date(file.lastModified()),DateTools.Resolution.DAY);
+			//String modificationDate=DateTools.dateToString(new Date(file.lastModified()),DateTools.Resolution.DAY);
 			//retVal.setFiledate(modificationDate);
 			
-			pdf.close();
+			//pdf.close();
 		} catch (IOException e) {
 			System.out.println("Greksa pri konvertovanju dokumenta u pdf");
 		}
