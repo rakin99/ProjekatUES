@@ -5,6 +5,7 @@ var showMessages = false;
 var showMessageForm = false;
 var allAccounts = false;
 var createMessage = false;
+var messages = [];
 //var roles;
 
 // funkcija za logovanje
@@ -366,9 +367,9 @@ function getMessages() {
 	    {
 			meessagesTable.find('tr:gt(1)').remove();
 			meessagesTable.show();			
-			console.log(data)
-			var messages = data;
-			console.log(messages.length)
+			//console.log(data)
+			messages = data;
+			//console.log(messages.length)
 			if(messages.length===0 && showMessages===true){
 				showMessages=!showMessages;
 				alert("You don't have any messages yet!");
@@ -377,8 +378,8 @@ function getMessages() {
 				for (it in messages) {
 					meessagesTable.append(
 						'<tr>' +  
-							'<td>' + messages[it]._from + '</td>' + 
-							'<td>' + messages[it]._to + '</td>' +
+							'<td>' + messages[it].fromSender + '</td>' + 
+							'<td>' + messages[it].toReciver + '</td>' +
 							'<td>' + messages[it].subject + '</td>' +
 							'<td>' + messages[it].content.substring(0,30) + "..." + '</td>' +
 						'</tr>'
@@ -387,8 +388,8 @@ function getMessages() {
 			}
 
 	    	console.log('Get Messages - Response:');
-	    	console.log(data);
-	    	console.log("===========================================================================");
+	    	//console.log(data);
+	    	//console.log("===========================================================================");
 	    	
 	    }
 	});
@@ -510,10 +511,11 @@ function searchMessages(){
         data: data,
         contentType: 'application/json',
         success: function (data) {
+			messages = data;
         	$('#messagesTable').find('tr:gt(1)').remove();
-            for(index = 0; index < data.length; index++){
-                var result = data[index];
-				console.log(result);
+            for(index = 0; index < messages.length; index++){
+                var result = messages[index];
+				//console.log(result);
 				$('#messagesTable').append(
 					"<tr>" +
 						"<td>" + result.fromSender + "</td>" +
@@ -524,7 +526,7 @@ function searchMessages(){
 					"</tr>"
 					);
             }
-            console.log("SUCCESS : ", data);
+            //console.log("SUCCESS : ", messages);
             //$("#btnSubmitLuceneQueryLanguage").prop("disabled", false);
 
         },
@@ -536,4 +538,41 @@ function searchMessages(){
 
         }
     });
+}
+
+function showTableForMessages(){
+	var meessagesTable = $('#messagesTable');
+	meessagesTable.find('tr:gt(1)').remove();
+	meessagesTable.show();
+	for (it in messages) {
+		meessagesTable.append(
+			'<tr>' +  
+				'<td>' + messages[it].fromSender + '</td>' + 
+				'<td>' + messages[it].toReciver + '</td>' +
+				'<td>' + messages[it].subject + '</td>' +
+				'<td>' + messages[it].content.substring(0,30) + "..." + '</td>' +
+			'</tr>'
+					)	
+	}
+}
+
+function ElementForSort(element){
+	showMessages=false;
+	if(element === 'from'){
+		//console.log("Sortiram po: "+element);
+		messages.sort((a, b) => (a.fromSender > b.fromSender) ? 1 : -1);
+		showTableForMessages();
+	}else if(element === 'to'){
+		//console.log("Sortiram po: "+element);
+		messages.sort((a, b) => (a.toReciver > b.toReciver) ? 1 : -1);
+		showTableForMessages();
+	}else if(element === 'subject'){
+		//console.log("Sortiram po: "+element);
+		messages.sort((a, b) => (a.subject > b.subject) ? 1 : -1);
+		showTableForMessages();
+	}else if(element === 'content'){
+		//console.log("Sortiram po: "+element);
+		messages.sort((a, b) => (a.content > b.content) ? 1 : -1);
+		showTableForMessages();
+	}
 }

@@ -146,11 +146,11 @@ public class MessageController {
 		System.out.println("\nPoceo slanje poruke!<-------------------------\n");
 		System.out.println("\nContent je: "+messageDTO.getContent()+"<-------------------------\n");
 		try {
-			System.out.println("\nEmail je: "+messageDTO.get_from()+"<-------------------------\n");
-			Account account=accountService.findByDisplayname(messageDTO.get_from());
+			System.out.println("\nEmail je: "+messageDTO.getFromSender()+"<-------------------------\n");
+			Account account=accountService.findByDisplayname(messageDTO.getFromSender());
 			MyMessage message = new MyMessage();
-			message.set_from(messageDTO.get_from());
-			message.set_to(messageDTO.get_to());
+			message.set_from(messageDTO.getFromSender());
+			message.set_to(messageDTO.getToReciver());
 			message.set_cc(messageDTO.get_cc());;
 			message.set_bcc(messageDTO.get_bcc());;
 			message.setDateTime(DateUtil.convertFromDMYHMS(messageDTO.getDateTime()));

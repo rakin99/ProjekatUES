@@ -11,8 +11,8 @@ import com.emailApplication.tools.DateUtil;
 public class MessageDTO implements Serializable{
 
 	private long id; 
-	private String _from; 
-	private String _to; 
+	private String fromSender; 
+	private String toReciver; 
 	private String _cc; 
 	private String _bcc; 
 	private GregorianCalendar dateTime; 
@@ -29,8 +29,8 @@ public class MessageDTO implements Serializable{
 			String content, boolean unread, boolean active) {
 		super();
 		this.id = id;
-		this._from = _from;
-		this._to = _to;
+		this.fromSender = _from;
+		this.toReciver = _to;
 		this._cc = _cc;
 		this._bcc = _bcc;
 		this.dateTime = dateTime;
@@ -53,20 +53,20 @@ public class MessageDTO implements Serializable{
 		this.id = id;
 	}
 
-	public String get_from() {
-		return _from;
+	public String getFromSender() {
+		return fromSender;
 	}
 
-	public void set_from(String _from) {
-		this._from = _from;
+	public void setFromSender(String fromSender) {
+		this.fromSender = fromSender;
 	}
 
-	public String get_to() {
-		return _to;
+	public String getToReciver() {
+		return toReciver;
 	}
 
-	public void set_to(String _to) {
-		this._to = _to;
+	public void setToReciver(String toReciver) {
+		this.toReciver = toReciver;
 	}
 
 	public String get_cc() {
