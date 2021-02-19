@@ -12,6 +12,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -32,6 +34,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.emailApplication.lucene.indexing.Indexer;
 import com.emailApplication.lucene.indexing.analysers.SerbianAnalyzer;
+import com.emailApplication.lucene.model.AdvancedQuery;
 import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.lucene.model.IndexUnit;
 import com.emailApplication.lucene.model.RequiredHighlight;
@@ -170,12 +173,36 @@ public class MessageController {
 	}
 	
 	@PostMapping(value="/search", consumes="application/json")
-	public ResponseEntity<List<ResultData>> search(@RequestBody SimpleQuery simpleQuery) throws Exception {
-		System.out.println("Field: "+simpleQuery.getField());
-		System.out.println("Value: "+simpleQuery.getValue());
-		QueryParser qp=new QueryParser(simpleQuery.getField(), new SerbianAnalyzer());			
-		Query query=qp.parse(simpleQuery.getValue());
+	public ResponseEntity<List<ResultData>> search(@RequestBody AdvancedQuery advancedQuery) throws Exception {
+		System.out.println("Field1: "+advancedQuery.getField1());
+		System.out.println("Value1: "+advancedQuery.getValue1());
+		System.out.println("Field2: "+advancedQuery.getField2());
+		System.out.println("Value2: "+advancedQuery.getValue2());
+		System.out.println("Operation: "+advancedQuery.getOperation());
+		QueryParser qp1=new QueryParser(advancedQuery.getField1(), new SerbianAnalyzer());			
+		Query query1=qp1.parse(advancedQuery.getValue1());
+		QueryParser qp2=new QueryParser(advancedQuery.getField2(), new SerbianAnalyzer());			
+		Query query2=qp2.parse(advancedQuery.getValue2());
+		BooleanQuery.Builder builder=new BooleanQuery.Builder();
+		if(!advancedQuery.getValue1().isEmpty() && !advancedQuery.getValue2().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
+
+			if(advancedQuery.getOperation().equalsIgnoreCase("AND")){
+				builder.add(query1,BooleanClause.Occur.MUST);
+				builder.add(query2,BooleanClause.Occur.MUST);
+			}else if(advancedQuery.getOperation().equalsIgnoreCase("OR")){
+				builder.add(query1,BooleanClause.Occur.SHOULD);
+				builder.add(query2,BooleanClause.Occur.SHOULD);
+			}
+			
+		}else if(!advancedQuery.getValue1().isEmpty()) {
+			builder.add(query1,BooleanClause.Occur.MUST);
+		}else if(!advancedQuery.getValue2().isEmpty()) {
+			builder.add(query2,BooleanClause.Occur.MUST);
+		}
+		
+		Query query = builder.build();
 		List<ResultData> results = ResultRetriever.getResults(query);
+		
 		return new ResponseEntity<List<ResultData>>(results, HttpStatus.OK);
 	}
 	

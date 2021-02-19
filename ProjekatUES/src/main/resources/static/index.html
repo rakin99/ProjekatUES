@@ -120,18 +120,32 @@
 						  </th>
 						  <th>
 							<label>Search by:</label>
-							<select class="form-control" id="inputField">
+							<select class="form-control" id="inputField1">
 								<option value="subject">Subject</option>
 								<option value="content">Content</option>
 								<option value="fromSender">Sender</option>
 								<option value="toReciver">Reciver</option>
-								<option value="attachment_content">Attachment</option>
+								<option value="attachment_content">Attachment</option> <br/>
+								<input placeholder="Search value..." id="inputValue1" class="form-control"/>
 							</select>
 						  </th>
 						  <th>
-							<input placeholder="Search value..." id="inputValue" class="form-control"/>
+							<label>Search by:</label>
+							<select class="form-control" id="inputField2">
+								<option value="subject">Subject</option>
+								<option value="content">Content</option>
+								<option value="fromSender">Sender</option>
+								<option value="toReciver">Reciver</option>
+								<option value="attachment_content">Attachment</option> <br/>
+								<input placeholder="Search value..." id="inputValue2" class="form-control"/>
+							</select>
 						  </th>
 						  <th>
+							<label>Operation:</label>
+							<select class="form-control" id="inputOperation">
+							  <option value="and">AND</option>
+							  <option value="or">OR</option>
+							</select>
 							<button type="button" onclick="searchMessages()" class="btn btn-primary">Search</button>
 						  </th>
 					  </tr>

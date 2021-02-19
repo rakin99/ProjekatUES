@@ -508,11 +508,17 @@ function getAccountsForSelect(){
 
 function searchMessages(){
 	showMessages=false;
-	var inputValue = $('#inputValue').val();
-	var inputField = $('#inputField').val();
+	var inputValue1 = $('#inputValue1').val();
+	var inputField1 = $('#inputField1').val();
+	var inputValue2 = $('#inputValue2').val();
+	var inputField2 = $('#inputField2').val();
+	var inputOperation = $('#inputOperation').val();
 	var data = JSON.stringify({
-		"field":inputField,
-		"value":inputValue
+		"field1":inputField1,
+		"value1":inputValue1,
+		"field2":inputField2,
+		"value2":inputValue2,
+		"operation":inputOperation
 	});
 	$.ajax({
         type: "POST",
