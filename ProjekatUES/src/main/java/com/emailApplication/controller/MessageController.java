@@ -39,8 +39,10 @@ import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.lucene.model.IndexUnit;
 import com.emailApplication.lucene.model.RequiredHighlight;
 import com.emailApplication.lucene.model.ResultData;
+import com.emailApplication.lucene.model.SearchType;
 import com.emailApplication.lucene.model.SimpleQuery;
 import com.emailApplication.lucene.model.UploadModel;
+import com.emailApplication.lucene.search.QueryBuilder;
 import com.emailApplication.lucene.search.ResultRetriever;
 import com.emailApplication.model.Account;
 import com.emailApplication.model.MyMessage;
@@ -52,7 +54,6 @@ import com.emailApplication.service.AccountService;
 import com.emailApplication.service.MessageService;
 import com.emailApplication.service.UserService;
 import com.emailApplication.tools.DateUtil;
-
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -174,30 +175,47 @@ public class MessageController {
 	
 	@PostMapping(value="/search", consumes="application/json")
 	public ResponseEntity<List<ResultData>> search(@RequestBody AdvancedQuery advancedQuery) throws Exception {
+		List<Account> accounts = accountService.findByUser(userService.findByUsername(advancedQuery.getUser()));
+		System.out.println("User: "+advancedQuery.getUser());
 		System.out.println("Field1: "+advancedQuery.getField1());
 		System.out.println("Value1: "+advancedQuery.getValue1());
 		System.out.println("Field2: "+advancedQuery.getField2());
 		System.out.println("Value2: "+advancedQuery.getValue2());
 		System.out.println("Operation: "+advancedQuery.getOperation());
-		QueryParser qp1=new QueryParser(advancedQuery.getField1(), new SerbianAnalyzer());			
-		Query query1=qp1.parse(advancedQuery.getValue1());
-		QueryParser qp2=new QueryParser(advancedQuery.getField2(), new SerbianAnalyzer());			
-		Query query2=qp2.parse(advancedQuery.getValue2());
+		Query query1;		
+		Query query2;
+		Query queryReciver;
 		BooleanQuery.Builder builder=new BooleanQuery.Builder();
-		if(!advancedQuery.getValue1().isEmpty() && !advancedQuery.getValue2().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
+		for (Account account : accounts) {
+			if(account.isActive()) {
+				if(!advancedQuery.getValue1().isEmpty() && !advancedQuery.getValue2().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
 
-			if(advancedQuery.getOperation().equalsIgnoreCase("AND")){
-				builder.add(query1,BooleanClause.Occur.MUST);
-				builder.add(query2,BooleanClause.Occur.MUST);
-			}else if(advancedQuery.getOperation().equalsIgnoreCase("OR")){
-				builder.add(query1,BooleanClause.Occur.SHOULD);
-				builder.add(query2,BooleanClause.Occur.SHOULD);
+					queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", account.getDisplayname());	
+					query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
+					query2=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField2(), advancedQuery.getValue2());
+					
+					if(advancedQuery.getOperation().equalsIgnoreCase("AND")){
+						builder.add(queryReciver,BooleanClause.Occur.MUST);
+						builder.add(query1,BooleanClause.Occur.MUST);
+						builder.add(query2,BooleanClause.Occur.MUST);
+					}else if(advancedQuery.getOperation().equalsIgnoreCase("OR")){
+						builder.add(queryReciver,BooleanClause.Occur.MUST);
+						builder.add(query1,BooleanClause.Occur.SHOULD);
+						builder.add(query2,BooleanClause.Occur.SHOULD);
+					}
+					
+				}else if(!advancedQuery.getValue1().isEmpty()) {
+					queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", account.getDisplayname());	
+					query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
+					builder.add(query1,BooleanClause.Occur.MUST);
+					builder.add(queryReciver,BooleanClause.Occur.MUST);
+				}else if(!advancedQuery.getValue2().isEmpty()) {
+					queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", account.getDisplayname());	
+					query2=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField2(), advancedQuery.getValue2());
+					builder.add(query2,BooleanClause.Occur.MUST);
+					builder.add(queryReciver,BooleanClause.Occur.MUST);
+				}
 			}
-			
-		}else if(!advancedQuery.getValue1().isEmpty()) {
-			builder.add(query1,BooleanClause.Occur.MUST);
-		}else if(!advancedQuery.getValue2().isEmpty()) {
-			builder.add(query2,BooleanClause.Occur.MUST);
 		}
 		
 		Query query = builder.build();

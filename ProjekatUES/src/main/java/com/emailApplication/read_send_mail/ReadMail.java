@@ -61,9 +61,9 @@ public class ReadMail{
 	    }
 	   }); 
 	   //2) create the POP3 store object and connect with the pop server  
-	   // System.out.println(prom2+" "+pop3Host+" "+account.getUsername()+"@"+pop3Host+" "+password);
+	    System.out.println(prom2+" "+pop3Host+" "+account.getUsername()+"@"+account.getSmtpAddress()+" "+password);
 	   Store emailStore = emailSession.getStore(prom);
-	 emailStore.connect(prom2+pop3Host,account.getUsername()+"@"+pop3Host, password);
+	 emailStore.connect(prom2+pop3Host,account.getUsername()+"@"+account.getSmtpAddress(), password);
 	  
 	   //3) create the folder object and open it  
 	   Folder emailFolder = emailStore.getFolder(folder);  
@@ -175,6 +175,7 @@ public class ReadMail{
 		    message.setAccount(account);
 		    account.getMessages().add(message);
 		    System.out.println("Upisujem mejl!");
+		    //System.out.println("'nMessage: "+message.getSubject()+" From: "+message.get_from()+" Content: "+message.getContent());
 	    	messageService.save(message);
 			//System.out.println(i+". poruka je upisana.");
 	    }

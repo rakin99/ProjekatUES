@@ -7,6 +7,7 @@ var allAccounts = false;
 var createMessage = false;
 var showOneMessage = false;
 var messages = [];
+var load = true;
 //var roles;
 
 // funkcija za logovanje
@@ -354,6 +355,7 @@ function download(filename, text) {
 function showMessagesTable(){
 	var meessagesTable = $('#messagesTable');
 	var oneMessage=$('#oneMessage');
+	load = true;
 	showMessages=!showMessages;
 	if(showMessages){
 		getMessages();
@@ -365,8 +367,12 @@ function showMessagesTable(){
 }
 
 function getMessages() {
+	var loading = $('#loading');
 	var meessagesTable = $('#messagesTable');
 	var selectMessages = $('#selectMessages').val();
+	if(load){
+		loading.show();
+	}
 	$.ajax({
 	    url : '/messages/'+selectMessages+"/"+username,
 	    type: 'GET',
@@ -375,6 +381,7 @@ function getMessages() {
 	    success: function(data)
 	    {
 			meessagesTable.find('tr:gt(1)').remove();
+			loading.hide();
 			meessagesTable.show();			
 			//console.log(data)
 			messages = data;
@@ -451,6 +458,7 @@ function getAllAccounts() {
 }
 
 function timer(){
+	load = false;
 	if(showMessages){
 		// Set the date we're counting down to
 		var year = new Date().getFullYear();
@@ -508,24 +516,28 @@ function getAccountsForSelect(){
 
 function searchMessages(){
 	showMessages=false;
+	var loading = $('#loading');
 	var inputValue1 = $('#inputValue1').val();
 	var inputField1 = $('#inputField1').val();
 	var inputValue2 = $('#inputValue2').val();
 	var inputField2 = $('#inputField2').val();
 	var inputOperation = $('#inputOperation').val();
 	var data = JSON.stringify({
+		"user":username,
 		"field1":inputField1,
 		"value1":inputValue1,
 		"field2":inputField2,
 		"value2":inputValue2,
 		"operation":inputOperation
 	});
+	loading.show();
 	$.ajax({
         type: "POST",
         url: "messages/search",
         data: data,
         contentType: 'application/json',
         success: function (data) {
+			loading.hide();
 			messages = data;
         	$('#messagesTable').find('tr:gt(1)').remove();
             for(index = 0; index < messages.length; index++){

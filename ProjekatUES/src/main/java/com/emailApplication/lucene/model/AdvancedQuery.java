@@ -2,6 +2,7 @@ package com.emailApplication.lucene.model;
 
 public class AdvancedQuery {
 	
+	private String user;
 	private String field1;
 	private String value1;
 	private String field2;
@@ -10,6 +11,12 @@ public class AdvancedQuery {
 	
 	public AdvancedQuery() {
 		super();
+	}
+	public String getUser() {
+		return user;
+	}
+	public void setUser(String user) {
+		this.user = user;
 	}
 	public String getField1() {
 		return field1;
