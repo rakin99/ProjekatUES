@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -22,11 +23,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.emailApplication.lucene.indexing.analysers.SerbianAnalyzer;
 import com.emailApplication.lucene.model.AdvancedQuery;
-import com.emailApplication.lucene.model.ResultData;
+import com.emailApplication.lucene.model.ContactRD;
+import com.emailApplication.lucene.model.IndexContact;
+import com.emailApplication.lucene.model.MessageRD;
 import com.emailApplication.lucene.model.SearchType;
 import com.emailApplication.lucene.search.QueryBuilder;
 import com.emailApplication.lucene.search.ResultRetriever;
+import com.emailApplication.lucene.search.ResultRetrieverContact;
 import com.emailApplication.model.Account;
 import com.emailApplication.model.Contact;
 import com.emailApplication.model.User;
@@ -44,16 +49,22 @@ public class ContactController {
 	@Autowired
 	private UserService userService;
 	
-	@GetMapping(value="/contacts/{username}/{sort}")
-	public ResponseEntity<List<ContactDTO>> getContacts(@PathVariable("username") String username,@PathVariable("sort") String sort) throws MessagingException, IOException, ParseException{
+	@GetMapping(value="/{username}")
+	public ResponseEntity<List<ContactRD>> getContacts(@PathVariable("username") String username) throws MessagingException, IOException, ParseException{
 		System.out.println("\n\nPokusavam naci kontakte za: "+username+"<---------------------------------------\n");
+		List<ContactRD> contacts = new ArrayList<ContactRD>();
+		QueryParser qp=new QueryParser("user", new SerbianAnalyzer());			
+		Query query;
+		try {
+			query = qp.parse('"'+username+'"');
+			contacts = ResultRetrieverContact.getResults(query);
+		} catch (org.apache.lucene.queryparser.classic.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ResponseEntity<List<ContactRD>>(contacts,HttpStatus.BAD_REQUEST);
+		}
 		
-		
-		List<Contact> contacts=contactService.findAllContacts(username);
-		System.out.println("\n\n\n\nBroj kontakata: "+contacts.size());
-		List<ContactDTO> contactsDTO=new ArrayList<ContactDTO>();
-		
-		return new ResponseEntity<List<ContactDTO>>(contactsDTO,HttpStatus.OK);
+		return new ResponseEntity<List<ContactRD>>(contacts,HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/contacts/{username}/{id}")
@@ -83,7 +94,8 @@ public class ContactController {
 	}
 	
 	@PostMapping(value="/search", consumes="application/json")
-	public ResponseEntity<List<ResultData>> search(@RequestBody AdvancedQuery advancedQuery) throws Exception {
+	public ResponseEntity<List<ContactRD>> search(@RequestBody AdvancedQuery advancedQuery) throws Exception {
+		System.out.println("Pertraga kontakata!");
 		System.out.println("User: "+advancedQuery.getUser());
 		System.out.println("Field1: "+advancedQuery.getField1());
 		System.out.println("Value1: "+advancedQuery.getValue1());
@@ -96,7 +108,7 @@ public class ContactController {
 		BooleanQuery.Builder builder=new BooleanQuery.Builder();
 		if(!advancedQuery.getValue1().isEmpty() && !advancedQuery.getValue2().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
 
-			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", advancedQuery.getUser());	
+			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
 			query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
 			query2=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField2(), advancedQuery.getValue2());
 			
@@ -111,21 +123,21 @@ public class ContactController {
 			}
 			
 		}else if(!advancedQuery.getValue1().isEmpty()) {
-			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", advancedQuery.getUser());	
+			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
 			query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
 			builder.add(query1,BooleanClause.Occur.MUST);
 			builder.add(queryReciver,BooleanClause.Occur.MUST);
 		}else if(!advancedQuery.getValue2().isEmpty()) {
-			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", advancedQuery.getUser());	
+			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
 			query2=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField2(), advancedQuery.getValue2());
 			builder.add(query2,BooleanClause.Occur.MUST);
 			builder.add(queryReciver,BooleanClause.Occur.MUST);
 		}
 		
 		Query query = builder.build();
-		List<ResultData> results = ResultRetriever.getResults(query);
+		List<ContactRD> results = ResultRetrieverContact.getResults(query);
 		
-		return new ResponseEntity<List<ResultData>>(results, HttpStatus.OK);
+		return new ResponseEntity<List<ContactRD>>(results, HttpStatus.OK);
 	}
 	
 	@PutMapping(value="/contacts/{id}", consumes="application/json")

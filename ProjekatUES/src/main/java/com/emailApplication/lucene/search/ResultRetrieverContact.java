@@ -26,27 +26,29 @@ import com.emailApplication.lucene.indexing.handlers.TextDocHandler;
 import com.emailApplication.lucene.indexing.handlers.Word2007Handler;
 import com.emailApplication.lucene.indexing.handlers.WordHandler;
 import com.emailApplication.lucene.model.RequiredHighlight;
+import com.emailApplication.lucene.model.ContactRD;
+import com.emailApplication.lucene.model.IndexContact;
 import com.emailApplication.lucene.model.MessageRD;
 
 
-public class ResultRetriever {
+public class ResultRetrieverContact {
 	
 	private TopScoreDocCollector collector;
 	private static int maxHits = 10;
 	
-	public ResultRetriever(){
+	public ResultRetrieverContact(){
 		collector=TopScoreDocCollector.create(10);
 	}
 	
 	public static void setMaxHits(int maxHits) {
-		ResultRetriever.maxHits = maxHits;
+		ResultRetrieverContact.maxHits = maxHits;
 	}
 
 	public static int getMaxHits() {
-		return ResultRetriever.maxHits;
+		return ResultRetrieverContact.maxHits;
 	}
 
-	public static List<MessageRD> getResults(Query query) {
+	public static List<ContactRD> getResults(Query query) {
 		if (query == null) {
 			return null;
 		}
@@ -58,22 +60,21 @@ public class ResultRetriever {
 			TopScoreDocCollector collector = TopScoreDocCollector.create(
 					maxHits);
 
-			List<MessageRD> results = new ArrayList<MessageRD>();
+			List<ContactRD> results = new ArrayList<ContactRD>();
 
 			is.search(query, collector);
 			ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-			MessageRD rd;
+			ContactRD rd;
 			Document doc;
 			for (ScoreDoc sd : hits) {
 				doc = is.doc(sd.doc);
-				String subject = doc.get("subject");
-				String content = doc.get("content");
-				String fromSender = doc.get("fromSender");
-				String toReciver = doc.get("toReciver");
-				String path = doc.get("path");
+				String firstName = doc.get("firstName");
+				String lastName = doc.get("lastName");
+				String user = doc.get("user");
+				String note = doc.get("note");
 				String id = doc.get("id");
-				rd = new MessageRD(subject, content, id, fromSender, toReciver, path);
+				rd = new ContactRD(id,firstName,lastName,note,user);
 				results.add(rd);
 			}
 			reader.close();

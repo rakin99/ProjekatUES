@@ -292,7 +292,54 @@
 		  </div>
 		  
 		  <br/>
-		
+		<!-- Get all contacts  -->
+		<div class="card" id="allAccountsForm">
+			<div class="card-body">
+				<button type="button" onclick="getAllContacts()" class="btn btn-primary">Get All Contacts</button>
+				<table class="table" id="contactsTable" style="display:none;">
+					<thead class="black white-text">
+						<tr>
+							<th>
+								<label>Search by:</label>
+								<select class="form-control" id="inputField1Contacts">
+									<option value="firstName">First name</option>
+									<option value="lastName">Last name</option>
+									<option value="note">Note</option>
+									<input placeholder="Search value..." id="inputValue1Contacts" class="form-control"/>
+								</select>
+							</th>
+							<th>
+								<label>Search by:</label>
+								<select class="form-control" id="inputField2Contacts">
+									<option value="firstName">First name</option>
+									<option value="lastName">Last name</option>
+									<option value="note">Note</option>
+									<input placeholder="Search value..." id="inputValue2Contacts" class="form-control"/>
+								</select>
+							  </th>
+							  <th>
+								<label>Operation:</label>
+								<select class="form-control" id="inputOperationContacts">
+								  <option value="and">AND</option>
+								  <option value="or">OR</option>
+								</select>
+								<button type="button" onclick="searchContacts()" class="btn btn-primary">Search</button>
+							</th>
+						</tr>
+						<tr>
+							<th>First name</th>
+							<th>Last name</th>
+							<th>Note</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<br/>
 	    <div class="card">
 	      <div class="card-header">
 		      	<button type="button" onclick="logout()" class="btn btn-primary" style="margin-right:1.25em;">Log out</button>

@@ -9,6 +9,7 @@ var showOneMessage = false;
 var messages = [];
 var load = true;
 var showFormAddContact = false;
+var allContacts = false;
 //var roles;
 
 // funkcija za logovanje
@@ -702,4 +703,95 @@ function showCreateContact(){
 	else if(showFormAddContact==true){
 		createContact.show();
 	}
+}
+
+function getAllContacts(){
+	var contactsTable = $('#contactsTable');
+	allContacts=!allContacts;
+	if(allContacts){
+		$.ajax({
+			url : 'contacts/'+username,
+			type: 'GET',
+			contentType:"application/json; charset=utf-8",
+			dataType:"json",
+			success: function(data)
+			{
+				if(data.length==0){
+					alert("There are no contacts yet!");
+				}else{
+					//console.log("Porsao sam u elese i data je: "+JSON.stringify(data));
+					contactsTable.find('tr:gt(1)').remove();
+					contactsTable.show();
+					var contacts = data;
+					for (it in contacts) {
+						contactsTable.append(
+							'<tr>' +  
+								'<td>' + contacts[it].firstName + '</td>' + 
+								'<td>' + contacts[it].lastName + '</td>' +
+								'<td>' + contacts[it].note + '</td>' +
+							'</tr>'
+									)	
+					}
+					
+					//console.log('Get All Contacts - Response:');
+					//console.log(data);
+					//console.log("===========================================================================");
+					
+					/*$('#getAllUsersError').hide();
+					$('#getAllUsersSuccess').show();*/
+				}
+				
+			}
+		});
+	}
+	else{
+		contactsTable.hide();
+	}
+}
+
+function searchContacts(){
+	var inputValue1 = $('#inputValue1Contacts').val();
+	var inputField1 = $('#inputField1Contacts').val();
+	var inputValue2 = $('#inputValue2Contacts').val();
+	var inputField2 = $('#inputField2Contacts').val();
+	var inputOperation = $('#inputOperation').val();
+	var data = JSON.stringify({
+		"user":username,
+		"field1":inputField1,
+		"value1":inputValue1,
+		"field2":inputField2,
+		"value2":inputValue2,
+		"operation":inputOperation
+	});
+	$.ajax({
+        type: "POST",
+        url: "contacts/search",
+        data: data,
+        contentType: 'application/json',
+        success: function (data) {
+			contacts = data;
+        	$('#contactsTable').find('tr:gt(1)').remove();
+            for(index = 0; index < contacts.length; index++){
+                var result = contacts[index];
+				console.log(result);
+				$('#contactsTable').append(
+					"<tr>" +
+						"<td>" + result.firstName + "</td>" +
+						"<td>" + result.lastName + "</td>" +
+						"<td>" + result.note + "</td>" +
+					"</tr>"
+					);
+            }
+            //console.log("SUCCESS : ", messages);
+            //$("#btnSubmitLuceneQueryLanguage").prop("disabled", false);
+
+        },
+        error: function (e) {
+        	$('#result').find('tr:gt(1)').remove();
+            $("#result").text(e.responseText);
+            console.log("ERROR : ", e);
+            //$("#btnSubmitLuceneQueryLanguage").prop("disabled", false);
+
+        }
+    });
 }

@@ -31,9 +31,7 @@ public class ContactService implements com.emailApplication.service.ContactServi
 	public Contact save(Contact contact) {
 		Contact contact2 = null;
 		try {
-			//contact2 = contactRepository.save(contact);
-			long i=12;
-			contact2.setId(i);
+			contact2 = contactRepository.save(contact);
 			indexNewContact(contact2);
 		} catch (Exception e) {
 			// TODO: handle exception

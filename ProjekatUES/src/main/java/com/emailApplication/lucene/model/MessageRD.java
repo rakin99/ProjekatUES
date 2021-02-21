@@ -1,6 +1,6 @@
 package com.emailApplication.lucene.model;
 
-public final class ResultData {
+public final class MessageRD {
 	
 	private String subject;
 	private String content;
@@ -9,11 +9,11 @@ public final class ResultData {
 	private String toReciver;
 	private String path;
 	
-	public ResultData() {
+	public MessageRD() {
 		super();
 	}
 
-	public ResultData(String subject, String content, String id, String fromSender, String toReciver, String path) {
+	public MessageRD(String subject, String content, String id, String fromSender, String toReciver, String path) {
 		super();
 		this.subject = subject;
 		this.content = content;

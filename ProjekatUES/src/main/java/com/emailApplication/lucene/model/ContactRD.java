@@ -1,19 +1,13 @@
 package com.emailApplication.lucene.model;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.document.Field.Store;
-
-public class IndexContact {
-
+public final class ContactRD {
 	private String id;
 	private String firstName;
 	private String lastName;
 	private String note;
 	private String user;
 	
-	public IndexContact() {
+	public ContactRD() {
 		super();
 		this.id = "";
 		this.firstName = "";
@@ -22,7 +16,7 @@ public class IndexContact {
 		this.user = "";
 	}
 
-	public IndexContact(String id, String firstName, String lastName, String note, String user) {
+	public ContactRD(String id, String firstName, String lastName, String note, String user) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -69,15 +63,5 @@ public class IndexContact {
 
 	public void setUser(String user) {
 		this.user = user;
-	}
-
-	public Document getLuceneDocument(){
-		Document retVal = new Document();
-		retVal.add(new TextField("firstName", firstName, Store.YES));
-		retVal.add(new TextField("lastName", lastName, Store.YES));
-		retVal.add(new TextField("note", note, Store.YES));
-		retVal.add(new StringField("id",id, Store.YES));
-		retVal.add(new StringField("user",user, Store.YES));
-		return retVal;
 	}
 }

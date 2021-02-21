@@ -38,7 +38,7 @@ import com.emailApplication.lucene.model.AdvancedQuery;
 import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.lucene.model.IndexUnit;
 import com.emailApplication.lucene.model.RequiredHighlight;
-import com.emailApplication.lucene.model.ResultData;
+import com.emailApplication.lucene.model.MessageRD;
 import com.emailApplication.lucene.model.SearchType;
 import com.emailApplication.lucene.model.SimpleQuery;
 import com.emailApplication.lucene.model.UploadModel;
@@ -75,14 +75,14 @@ public class MessageController {
 	private UserService userService;
 	
 	@GetMapping(value="recived-messages/{username}")
-	public ResponseEntity<List<ResultData>> getMessages(@PathVariable("username") String username) throws MessagingException, IOException, ParseException{
+	public ResponseEntity<List<MessageRD>> getMessages(@PathVariable("username") String username) throws MessagingException, IOException, ParseException{
 		System.out.println("\n\nPokusavam naci poruke za: "+username+"<---------------------------------------\n");
 		
 		User user = userService.findByUsername(username);
 		List<Account> accounts = accountService.findByUser(user);
 		GregorianCalendar dateTime=DateUtil.getLastOneHour();
 		List<MessageDTO> messagesDTO=new ArrayList<MessageDTO>();
-		List<ResultData> results = new ArrayList<ResultData>();
+		List<MessageRD> results = new ArrayList<MessageRD>();
 		for (Account account : accounts) {
 			if(account.isActive()) {
 				//System.out.println("\nUsername: "+account.getDisplayname());
@@ -98,8 +98,8 @@ public class MessageController {
 				Query query;
 				try {
 					query = qp.parse('"'+account.getDisplayname()+'"');
-					List<ResultData> messages = ResultRetriever.getResults(query);
-					for (ResultData myMessage : messages) {
+					List<MessageRD> messages = ResultRetriever.getResults(query);
+					for (MessageRD myMessage : messages) {
 						System.out.println("Reciver: "+myMessage.getToReciver());
 						System.out.println("Subject: "+myMessage.getSubject());
 						results.add(myMessage);
@@ -107,12 +107,12 @@ public class MessageController {
 				} catch (org.apache.lucene.queryparser.classic.ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					return new ResponseEntity<List<ResultData>>(results,HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<List<MessageRD>>(results,HttpStatus.BAD_REQUEST);
 				}
 			}
 		}
 		
-		return new ResponseEntity<List<ResultData>>(results,HttpStatus.OK);
+		return new ResponseEntity<List<MessageRD>>(results,HttpStatus.OK);
 	}
 	
 	@GetMapping
@@ -180,7 +180,7 @@ public class MessageController {
 	}
 	
 	@PostMapping(value="/search", consumes="application/json")
-	public ResponseEntity<List<ResultData>> search(@RequestBody AdvancedQuery advancedQuery) throws Exception {
+	public ResponseEntity<List<MessageRD>> search(@RequestBody AdvancedQuery advancedQuery) throws Exception {
 		List<Account> accounts = accountService.findByUser(userService.findByUsername(advancedQuery.getUser()));
 		System.out.println("User: "+advancedQuery.getUser());
 		System.out.println("Field1: "+advancedQuery.getField1());
@@ -225,18 +225,18 @@ public class MessageController {
 		}
 		
 		Query query = builder.build();
-		List<ResultData> results = ResultRetriever.getResults(query);
+		List<MessageRD> results = ResultRetriever.getResults(query);
 		
-		return new ResponseEntity<List<ResultData>>(results, HttpStatus.OK);
+		return new ResponseEntity<List<MessageRD>>(results, HttpStatus.OK);
 	}
 	
 	@PostMapping(value="/search-by-id", consumes="application/json")
-	public ResponseEntity<List<ResultData>> search(@RequestBody SimpleQuery simpleQuery) throws Exception {
+	public ResponseEntity<List<MessageRD>> search(@RequestBody SimpleQuery simpleQuery) throws Exception {
 		System.out.println("\n---->	SearchById");
 		QueryParser qp=new QueryParser(simpleQuery.getField(), new SerbianAnalyzer());			
 		Query query=qp.parse(simpleQuery.getValue());
-		List<ResultData> results = ResultRetriever.getResults(query);
-		return new ResponseEntity<List<ResultData>>(results, HttpStatus.OK);
+		List<MessageRD> results = ResultRetriever.getResults(query);
+		return new ResponseEntity<List<MessageRD>>(results, HttpStatus.OK);
 	}
 
 	@PutMapping(value="/messages/{id}", consumes="application/json")
