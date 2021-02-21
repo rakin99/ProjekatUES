@@ -61,6 +61,7 @@ public class ContactService implements com.emailApplication.service.ContactServi
 		indexContact.setLastName(contact.getLastName());
 		indexContact.setNote(contact.getNote());
 		indexContact.setUser(contact.getUser().getUsername());
+		indexContact.setEmail(contact.getEmail());
 		indexer.add(indexContact.getLuceneDocument());
 		//}
 	}

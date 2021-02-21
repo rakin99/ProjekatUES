@@ -74,7 +74,8 @@ public class ResultRetrieverContact {
 				String user = doc.get("user");
 				String note = doc.get("note");
 				String id = doc.get("id");
-				rd = new ContactRD(id,firstName,lastName,note,user);
+				String email = doc.get("email");
+				rd = new ContactRD(id,firstName,lastName,note,user,email);
 				results.add(rd);
 			}
 			reader.close();

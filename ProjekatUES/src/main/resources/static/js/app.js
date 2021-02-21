@@ -158,10 +158,10 @@ function sendMessage() {
 	var s=new Date().getSeconds();
 
 	var message = {
-		'_to' : emailAddress.val(),
+		'toReciver' : emailAddress.val(),
 		'_cc' : emailAddress.val(),
 		'_bcc' : emailAddress.val(),
-		'_from' : accountsSelect.val(),
+		'fromSender' : accountsSelect.val(),
 		'subject' : subject.val(),
 		'content': content.val(),
 		'dateTime': day+"-"+month+"-"+year+ " " +h+":"+m+":"+s,
@@ -728,7 +728,7 @@ function getAllContacts(){
 							'<tr>' +  
 								'<td>' + contacts[it].firstName + '</td>' + 
 								'<td>' + contacts[it].lastName + '</td>' +
-								'<td>' + contacts[it].note + '</td>' +
+								'<td>' + contacts[it].email + '</td>' +
 							'</tr>'
 									)	
 					}
@@ -754,7 +754,7 @@ function searchContacts(){
 	var inputField1 = $('#inputField1Contacts').val();
 	var inputValue2 = $('#inputValue2Contacts').val();
 	var inputField2 = $('#inputField2Contacts').val();
-	var inputOperation = $('#inputOperation').val();
+	var inputOperation = $('#inputOperationContacts').val();
 	var data = JSON.stringify({
 		"user":username,
 		"field1":inputField1,

@@ -81,7 +81,7 @@ public class MessageController {
 		User user = userService.findByUsername(username);
 		List<Account> accounts = accountService.findByUser(user);
 		GregorianCalendar dateTime=DateUtil.getLastOneHour();
-		List<MessageDTO> messagesDTO=new ArrayList<MessageDTO>();
+		
 		List<MessageRD> results = new ArrayList<MessageRD>();
 		for (Account account : accounts) {
 			if(account.isActive()) {
@@ -117,28 +117,33 @@ public class MessageController {
 	
 	@GetMapping
 	@RequestMapping(value="/sent-messages/{username}")
-	public ResponseEntity<List<MessageDTO>> getSentMessages(@PathVariable("username") String username) throws MessagingException, IOException, ParseException{
+	public ResponseEntity<List<MessageRD>> getSentMessages(@PathVariable("username") String username) throws MessagingException, IOException, ParseException{
 		System.out.println("Trazim poslate poruke...");
 		User user = userService.findByUsername(username);
 		List<Account> accounts = accountService.findByUser(user);
-		List<MessageDTO> messagesDTO=new ArrayList<MessageDTO>();
+		List<MessageRD> results = new ArrayList<MessageRD>();
 		for (Account account : accounts) {
 			if(account.isActive()) {
 				System.out.println("\nUsername: "+account.getDisplayname());
-				List<MyMessage> messages= messageService.findAllSentMessage(account.getDisplayname());
-				System.out.println("\n\n\n\nBroj poruka: "+messages.size());
-				for (MyMessage myMessage : messages) {
-					if(myMessage.isActive()) {
-						messagesDTO.add(new MessageDTO(myMessage));
+				QueryParser qp=new QueryParser("fromSender", new SerbianAnalyzer());			
+				Query query;
+				try {
+					query = qp.parse('"'+account.getDisplayname()+'"');
+					List<MessageRD> messages = ResultRetriever.getResults(query);
+					for (MessageRD myMessage : messages) {
+						System.out.println("Reciver: "+myMessage.getToReciver());
+						System.out.println("Subject: "+myMessage.getSubject());
+						results.add(myMessage);
 					}
-				}
-				if(messages.size()!=0) {
-					System.out.println("\n\nSaljem poruku sa Id-om: "+messages.get(messages.size()-1).getId()+"<<--------------------------\n");
+				} catch (org.apache.lucene.queryparser.classic.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return new ResponseEntity<List<MessageRD>>(results,HttpStatus.BAD_REQUEST);
 				}
 			}
 		}
 		
-		return new ResponseEntity<List<MessageDTO>>(messagesDTO,HttpStatus.OK);
+		return new ResponseEntity<List<MessageRD>>(results,HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/{username}/{id}")

@@ -11,6 +11,7 @@ public class IndexContact {
 	private String firstName;
 	private String lastName;
 	private String note;
+	private String email;
 	private String user;
 	
 	public IndexContact() {
@@ -20,15 +21,17 @@ public class IndexContact {
 		this.lastName = "";
 		this.note = "";
 		this.user = "";
+		this.email = "";
 	}
 
-	public IndexContact(String id, String firstName, String lastName, String note, String user) {
+	public IndexContact(String id, String firstName, String lastName, String note, String user,String email) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.note = note;
 		this.user = user;
+		this.user = email;
 	}
 
 	public String getId() {
@@ -71,6 +74,14 @@ public class IndexContact {
 		this.user = user;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public Document getLuceneDocument(){
 		Document retVal = new Document();
 		retVal.add(new TextField("firstName", firstName, Store.YES));
@@ -78,6 +89,7 @@ public class IndexContact {
 		retVal.add(new TextField("note", note, Store.YES));
 		retVal.add(new StringField("id",id, Store.YES));
 		retVal.add(new StringField("user",user, Store.YES));
+		retVal.add(new StringField("email",email, Store.YES));
 		return retVal;
 	}
 }

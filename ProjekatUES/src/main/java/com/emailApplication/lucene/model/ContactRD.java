@@ -6,6 +6,7 @@ public final class ContactRD {
 	private String lastName;
 	private String note;
 	private String user;
+	private String email;
 	
 	public ContactRD() {
 		super();
@@ -14,15 +15,17 @@ public final class ContactRD {
 		this.lastName = "";
 		this.note = "";
 		this.user = "";
+		this.email = "";
 	}
 
-	public ContactRD(String id, String firstName, String lastName, String note, String user) {
+	public ContactRD(String id, String firstName, String lastName, String note, String user, String email) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.note = note;
 		this.user = user;
+		this.email = email;
 	}
 
 	public String getId() {
@@ -59,6 +62,14 @@ public final class ContactRD {
 	
 	public String getUser() {
 		return user;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public void setUser(String user) {
