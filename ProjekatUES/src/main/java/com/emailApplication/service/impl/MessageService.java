@@ -119,5 +119,5 @@ public class MessageService implements com.emailApplication.service.MessageServi
 	     	//indexUnit.setKeywords(new ArrayList<String>(Arrays.asList(model.getKeywords().split(" "))));
 	     	indexer.add(indexMessage.getLuceneDocument());
 		//}
-}
+	}
 }

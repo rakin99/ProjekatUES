@@ -61,7 +61,7 @@ public class ReadMail{
 	    }
 	   }); 
 	   //2) create the POP3 store object and connect with the pop server  
-	    System.out.println(prom2+" "+pop3Host+" "+account.getUsername()+"@"+account.getSmtpAddress()+" "+password);
+	    //System.out.println(prom2+" "+pop3Host+" "+account.getUsername()+"@"+account.getSmtpAddress()+" "+password);
 	   Store emailStore = emailSession.getStore(prom);
 	 emailStore.connect(prom2+pop3Host,account.getUsername()+"@"+account.getSmtpAddress(), password);
 	  

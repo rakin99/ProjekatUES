@@ -38,8 +38,8 @@ public class Contact {
 	private boolean active;
 	
 	@ManyToOne
-	@JoinColumn(name="account_id", referencedColumnName="account_id", nullable=false)
-	private Account account;
+	@JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
+	private User user;
 
 	public Contact() {
 		this.id = 0;
@@ -105,17 +105,19 @@ public class Contact {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-
-	public Account getAccount() {
-		return account;
+	
+	public User getUser() {
+		return user;
 	}
 
-	public void setAccount(Account account) {
-		this.account = account;
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	@Override
+	public String toString() {
+		return "Contact [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", displayName="
+				+ displayName + ", email=" + email + ", note=" + note + ", active=" + active + ", user=" + user + "]";
 	}
 	
-	public String toString() {
-	    return "(Contact)[\nid="+id+",_first_name="+firstName+",_last_name="+lastName+",_display_name="+displayName+",_email="+email+",_note="+note+"]";
-	  }
-
 }

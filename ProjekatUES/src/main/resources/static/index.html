@@ -140,7 +140,7 @@
 		<div class="card">
 	      <div class="card-body">
 			  <button type="button" onclick="showCreateMessage()" class="btn btn-primary">Create Message</button>
-			  <div id="createMessage" style="display:none;">
+			  <div id="createMessage" style="display:none;" class="col-sm-6 col-lg-4">
 				<br/>
 				<select class="form-control" id="selectAccount">
 					
@@ -148,7 +148,7 @@
 				<br/> <input type="email" class="form-control" id="emailReciever" placeholder="E-mail address recipient"> <br/>
 				<input type="text" class="form-control" id="subjectMessage" placeholder="Subject"> <br/>
 				<textarea class="form-control" id="contentMessage" rows="3" placeholder="Content"></textarea> <br/>
-				<button type="button" onclick="sendMessage()" class="btn btn-primary">Send Message</button>
+				<div style="float: right;"><button type="button" onclick="sendMessage()" class="btn btn-primary">Send Message</button></div>
 			  </div>
 	      </div>
 	    </div>
@@ -215,7 +215,7 @@
 			  </table>
 			  
 			  <!--Message -->
-				<div id="oneMessage" style="display:none;">
+				<div id="oneMessage" style="display:none;" >
 					From:<input cols="6" type="email" readonly class="form-control" id="emailSenderOneMessage"> <br/>
 					To: <input cols="6" type="email" readonly class="form-control" id="emailRecieverOneMessage"> <br/>
 					Subject:<input type="text" class="form-control" id="subjectOneMessage" placeholder="Subject"> <br/>
@@ -245,7 +245,7 @@
 						 class="form-control" id="passwordEmailRegister"
 						name="passwordRpasswordEmailRegisteregister" />
 				</div>
-				<button type="button" onclick="submitAccount()" class="btn btn-primary">Submit</button>
+				<div style="float: right;"><button type="button" onclick="submitAccount()" class="btn btn-primary">Submit</button></div>
 			</form>
 	      </div>
 	    </div>
@@ -275,6 +275,23 @@
 			</div>
 		</div>
 		<br/>
+
+		<!-- Create contact  -->
+		<div class="card">
+			<div class="card-body">
+				<button type="button" onclick="showCreateContact()" class="btn btn-primary">Create Contact</button>
+				<div id="createContact" class="col-sm-6 col-lg-4" style="display:none;"> <br/> 
+				  <input type="text" class="form-control" id="firstNameContact" placeholder="First name..."> <br/>
+				  <input type="text" class="form-control" id="lastNameContact" placeholder="Last name..."> <br/>
+				  <input type="text" class="form-control" id="displayNameContact" placeholder="Display name..."> <br/>
+				  <input type="email" class="form-control" id="emailContact" placeholder="E-mail address..."> <br/>
+				  <textarea class="form-control" id="noteContact" placeholder="Text..."></textarea> <br/>
+				  <div style="float: right;"><button type="button" onclick="submitContact()" class="btn btn-primary">Submit</button></div>
+				</div>
+			</div>
+		  </div>
+		  
+		  <br/>
 		
 	    <div class="card">
 	      <div class="card-header">

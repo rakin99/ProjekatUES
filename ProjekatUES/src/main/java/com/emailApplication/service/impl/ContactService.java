@@ -1,12 +1,19 @@
 package com.emailApplication.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.emailApplication.lucene.indexing.Indexer;
+import com.emailApplication.lucene.model.IndexContact;
+import com.emailApplication.lucene.model.IndexMessage;
 import com.emailApplication.model.Account;
 import com.emailApplication.model.Contact;
+import com.emailApplication.model.MyMessage;
+import com.emailApplication.model.User;
 import com.emailApplication.repository.ContactRepository;
 
 @Service
@@ -21,25 +28,18 @@ public class ContactService implements com.emailApplication.service.ContactServi
 	}
 	
 	@Override
-	public List<Contact> findByAccountOrderByDisplayNameAsc(Account account){
-		return contactRepository.findByAccountOrderByDisplayNameAsc(account);
-	}
-
-	@Override
-	public int maxId() {
-		int maxId=contactRepository.findMaxId();
-		return maxId;
-	}
-
-	@Override
-	public long count(String username) {
-		long count=contactRepository.count(username);
-		return count;
-	}
-	
-	@Override
 	public Contact save(Contact contact) {
-		return contactRepository.save(contact);
+		Contact contact2 = null;
+		try {
+			//contact2 = contactRepository.save(contact);
+			long i=12;
+			contact2.setId(i);
+			indexNewContact(contact2);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return contact2;
 	}
 
 	@Override
@@ -48,28 +48,22 @@ public class ContactService implements com.emailApplication.service.ContactServi
 	}
 
 	@Override
-	public List<Contact> findByAccountOrderByFirstNameAsc(Account account) {
-		return contactRepository.findByAccountOrderByFirstNameAsc(account);
-	}
-
-	@Override
-	public List<Contact> findByAccountOrderByLastNameAsc(Account account) {
-		return contactRepository.findByAccountOrderByLastNameAsc(account);
+	public List<Contact> findByUser(User user) {
+		return contactRepository.findByUser(user);
 	}
 	
-	@Override
-	public List<Contact> findByAccountOrderByDisplayNameDesc(Account account){
-		return contactRepository.findByAccountOrderByDisplayNameDesc(account);
+	private void indexNewContact(Contact contact) throws IOException{
+		Indexer indexer = Indexer.getInstance();
+		//List<MyMessage> messages = messageRepository.findAll();
+		//System.out.println("\n\tIndeksiram...");
+		//for (MyMessage message : messages) {
+		IndexContact indexContact = new IndexContact();
+		indexContact.setId(contact.getId());
+		indexContact.setFirstName(contact.getFirstName());
+		indexContact.setLastName(contact.getLastName());
+		indexContact.setNote(contact.getNote());
+		indexContact.setUser(contact.getUser().getUsername());
+		indexer.add(indexContact.getLuceneDocument());
+		//}
 	}
-	
-	@Override
-	public List<Contact> findByAccountOrderByFirstNameDesc(Account account) {
-		return contactRepository.findByAccountOrderByFirstNameDesc(account);
-	}
-
-	@Override
-	public List<Contact> findByAccountOrderByLastNameDesc(Account account) {
-		return contactRepository.findByAccountOrderByLastNameDesc(account);
-	}
-
 }

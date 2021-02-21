@@ -75,13 +75,14 @@ public class MessageController {
 	private UserService userService;
 	
 	@GetMapping(value="recived-messages/{username}")
-	public ResponseEntity<List<MessageDTO>> getMessages(@PathVariable("username") String username) throws MessagingException, IOException, ParseException{
+	public ResponseEntity<List<ResultData>> getMessages(@PathVariable("username") String username) throws MessagingException, IOException, ParseException{
 		System.out.println("\n\nPokusavam naci poruke za: "+username+"<---------------------------------------\n");
 		
 		User user = userService.findByUsername(username);
 		List<Account> accounts = accountService.findByUser(user);
 		GregorianCalendar dateTime=DateUtil.getLastOneHour();
 		List<MessageDTO> messagesDTO=new ArrayList<MessageDTO>();
+		List<ResultData> results = new ArrayList<ResultData>();
 		for (Account account : accounts) {
 			if(account.isActive()) {
 				//System.out.println("\nUsername: "+account.getDisplayname());
@@ -91,22 +92,27 @@ public class MessageController {
 					dateTime=messageService.getMaxDate(account.getDisplayname());
 				}
 				ReadMail.receiveEmail(account.getSmtpAddress(), account.getInServerAddress(), account,dateTime,count,"INBOX",messageService);
-				List<MyMessage> messages=messageService.findAllByToReciver(account.getDisplayname());
+				//List<MyMessage> messages=messageService.findAllByToReciver(account.getDisplayname());
 				//System.out.println("\n\n\n\nBroj poruka: "+messages.size());
-				
-				for (MyMessage myMessage : messages) {
-					if(myMessage.isActive()) {
-							messagesDTO.add(new MessageDTO(myMessage));
+				QueryParser qp=new QueryParser("toReciver", new SerbianAnalyzer());			
+				Query query;
+				try {
+					query = qp.parse('"'+account.getDisplayname()+'"');
+					List<ResultData> messages = ResultRetriever.getResults(query);
+					for (ResultData myMessage : messages) {
+						System.out.println("Reciver: "+myMessage.getToReciver());
+						System.out.println("Subject: "+myMessage.getSubject());
+						results.add(myMessage);
 					}
-				}
-				
-				if(messages.size()!=0) {
-					//System.out.println("\n\nSaljem poruku sa Id-om: "+messages.get(messages.size()-1).getId()+"<<--------------------------\n");
+				} catch (org.apache.lucene.queryparser.classic.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return new ResponseEntity<List<ResultData>>(results,HttpStatus.BAD_REQUEST);
 				}
 			}
 		}
 		
-		return new ResponseEntity<List<MessageDTO>>(messagesDTO,HttpStatus.OK);
+		return new ResponseEntity<List<ResultData>>(results,HttpStatus.OK);
 	}
 	
 	@GetMapping
@@ -224,6 +230,15 @@ public class MessageController {
 		return new ResponseEntity<List<ResultData>>(results, HttpStatus.OK);
 	}
 	
+	@PostMapping(value="/search-by-id", consumes="application/json")
+	public ResponseEntity<List<ResultData>> search(@RequestBody SimpleQuery simpleQuery) throws Exception {
+		System.out.println("\n---->	SearchById");
+		QueryParser qp=new QueryParser(simpleQuery.getField(), new SerbianAnalyzer());			
+		Query query=qp.parse(simpleQuery.getValue());
+		List<ResultData> results = ResultRetriever.getResults(query);
+		return new ResponseEntity<List<ResultData>>(results, HttpStatus.OK);
+	}
+
 	@PutMapping(value="/messages/{id}", consumes="application/json")
 	public ResponseEntity<MessageDTO> updateMessage(@RequestBody MessageDTO messageDTO, @PathVariable("id") long id) throws ParseException{
 		System.out.println("\n\nAzuriram poruku...."+messageDTO.getId());

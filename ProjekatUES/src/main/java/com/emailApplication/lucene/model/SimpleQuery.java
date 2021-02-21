@@ -8,6 +8,13 @@ public class SimpleQuery {
 	public SimpleQuery() {
 		super();
 	}
+	
+	public SimpleQuery(String field, String value) {
+		super();
+		this.field = field;
+		this.value = value;
+	}
+
 	public String getField() {
 		return field;
 	}

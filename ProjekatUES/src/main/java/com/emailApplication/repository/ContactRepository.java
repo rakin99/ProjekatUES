@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.emailApplication.model.Account;
 import com.emailApplication.model.Contact;
+import com.emailApplication.model.User;
 
 public interface ContactRepository extends JpaRepository<Contact, Integer>{
 
@@ -19,16 +20,7 @@ public interface ContactRepository extends JpaRepository<Contact, Integer>{
 	
 	Contact findById(long id);
 	
-	List<Contact> findByAccountOrderByDisplayNameAsc(Account account);
-	List<Contact> findByAccountOrderByDisplayNameDesc(Account account);
-	
-	List<Contact> findByAccountOrderByFirstNameAsc(Account account);
-	List<Contact> findByAccountOrderByFirstNameDesc(Account account);
-	
-	List<Contact> findByAccountOrderByLastNameAsc(Account account);
-	List<Contact> findByAccountOrderByLastNameDesc(Account account);
-	
-	@Query("FROM Contact WHERE _display_name LIKE concat('%',:username,'%')")
+	@Query("FROM Contact WHERE user LIKE concat('%',:username,'%')")
 	List<Contact> findAllContacts(@Param("username") String username);
-	
+	List<Contact> findByUser(User user);
 }

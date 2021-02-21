@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.emailApplication.lucene.model.ResultData;
 import com.emailApplication.model.MyMessage;
 import com.emailApplication.tools.DateUtil;
 
@@ -43,6 +44,14 @@ public class MessageDTO implements Serializable{
 	public MessageDTO(MyMessage message) throws ParseException {
 		this(message.getId(),message.get_from(),message.get_to(),message.get_cc(),message.get_bcc(),
 				message.getDateTime(),message.getSubject(),message.getContent(),message.isUnread(),message.isActive());
+	}
+	
+	public MessageDTO(ResultData message) throws ParseException {
+		this.id=Integer.parseInt(message.getId());
+		this.fromSender = message.getFromSender();
+		this.toReciver = message.getToReciver();
+		this.subject = message.getSubject();
+		this.content = message.getContent();
 	}
 
 	public long getId() {

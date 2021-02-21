@@ -13,14 +13,13 @@ public class ContactDTO implements Serializable{
 	private String displayName; 
 	private String email;
 	private String note;
-	private boolean active;
+	private String user;
 	
 	public ContactDTO() {
 		
 	}
 
-	public ContactDTO(long id, String firstName, String lastName, String displayName, String email, String note,
-			boolean active) {
+	public ContactDTO(long id, String firstName, String lastName, String displayName, String email, String note) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -28,11 +27,10 @@ public class ContactDTO implements Serializable{
 		this.displayName = displayName;
 		this.email = email;
 		this.note = note;
-		this.active = active;
 	}
 	
 	public ContactDTO(Contact contact) throws ParseException{
-		this(contact.getId(), contact.getFirstName(), contact.getLastName(), contact.getDisplayName(), contact.getEmail(), contact.getNote(), contact.isActive());
+		this(contact.getId(), contact.getFirstName(), contact.getLastName(), contact.getDisplayName(), contact.getEmail(), contact.getNote());
 	}
 
 	public long getId() {
@@ -83,12 +81,18 @@ public class ContactDTO implements Serializable{
 		this.note = note;
 	}
 
-	public boolean isActive() {
-		return active;
+	public String getUser() {
+		return user;
 	}
 
-	public void setActive(boolean active) {
-		this.active = active;
+	public void setUser(String user) {
+		this.user = user;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "ContactDTO [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", displayName="
+				+ displayName + ", email=" + email + ", note=" + note + ", user=" + user + "]";
+	}
+
 }

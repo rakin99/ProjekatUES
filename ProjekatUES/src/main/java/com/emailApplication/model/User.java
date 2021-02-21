@@ -42,6 +42,9 @@ public class User implements Serializable{
 	@OneToMany(cascade={ALL}, fetch=LAZY, mappedBy="user")
 	private List<Account> accounts = new ArrayList<Account>();
 	
+	@OneToMany(cascade={ALL}, fetch=LAZY, mappedBy="user")
+	private List<Contact> contacts = new ArrayList<Contact>();
+	
 	public User() {
 	}
 
@@ -109,8 +112,12 @@ public class User implements Serializable{
 	public void setAccounts(List<Account> accounts) {
 		this.accounts = accounts;
 	}
+	
+	public List<Contact> getContacts() {
+		return contacts;
+	}
 
-	public String toString() {
-	    return "(User)[id="+id+",username="+username+",password="+password+",firstname="+firstname+",lastname="+lastname+"]";
-	  }
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
+	}
 }

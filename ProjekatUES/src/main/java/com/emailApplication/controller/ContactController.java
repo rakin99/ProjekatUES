@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,86 +22,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.emailApplication.lucene.model.AdvancedQuery;
+import com.emailApplication.lucene.model.ResultData;
+import com.emailApplication.lucene.model.SearchType;
+import com.emailApplication.lucene.search.QueryBuilder;
+import com.emailApplication.lucene.search.ResultRetriever;
 import com.emailApplication.model.Account;
 import com.emailApplication.model.Contact;
+import com.emailApplication.model.User;
 import com.emailApplication.modelDTO.ContactDTO;
+import com.emailApplication.service.UserService;
 import com.emailApplication.service.impl.AccountService;
 import com.emailApplication.service.impl.ContactService;
 
 @RestController
-@RequestMapping(value="/api")
+@RequestMapping(value="/contacts")
 public class ContactController {
 	
 	@Autowired
 	private ContactService contactService;
 	@Autowired
-	private AccountService accountService;
+	private UserService userService;
 	
 	@GetMapping(value="/contacts/{username}/{sort}")
 	public ResponseEntity<List<ContactDTO>> getContacts(@PathVariable("username") String username,@PathVariable("sort") String sort) throws MessagingException, IOException, ParseException{
 		System.out.println("\n\nPokusavam naci kontakte za: "+username+"<---------------------------------------\n");
-		System.out.println("\n\nSort: "+sort+"<---------------------------------------\n");
-		Account account=accountService.findByUsername(username.split("@")[0]);
-		//GregorianCalendar dateTime=DateUtil.getLastOneHour();
-		System.out.println("\nUsername: "+account.getUsername());
-		//long count=contactService.count(username);
-		System.out.println("\nBroj kontakata u bazi je: "+contactService.count(username)+"\n");
-		/*if(count!=0) {
-			dateTime=contactService.getMaxDate(username);
-		}
-		System.out.println("Vreme poslednje poruke je:"+DateUtil.formatTimeWithSecond(dateTime));
-		ReadMail.receiveEmail(account.getSmtpAddress(), account.getInServerAddress(), account,dateTime,count,"INBOX",messageService);
-		*/List<Contact> contacts=new ArrayList<Contact>();
-		if(sort.equals("displayName|asc")) {
-			contacts= contactService.findByAccountOrderByDisplayNameAsc(account);
-		}else if(sort.equals("firstName|asc")) {
-			contacts= contactService.findByAccountOrderByFirstNameAsc(account);
-		}else if(sort.equals("lastName|asc")) {
-			contacts= contactService.findByAccountOrderByLastNameAsc(account);
-		}
-		else if(sort.equals("displayName|desc")) {
-			contacts= contactService.findByAccountOrderByDisplayNameDesc(account);
-		}else if(sort.equals("firstName|desc")) {
-			contacts= contactService.findByAccountOrderByFirstNameDesc(account);
-		}else if(sort.equals("lastName|desc")) {
-			contacts= contactService.findByAccountOrderByLastNameDesc(account);
-		}
+		
+		
+		List<Contact> contacts=contactService.findAllContacts(username);
 		System.out.println("\n\n\n\nBroj kontakata: "+contacts.size());
 		List<ContactDTO> contactsDTO=new ArrayList<ContactDTO>();
-		/*for (MyMessage myMessage : messages) {
-			if(myMessage.isActive()) {
-				if(!myMessage.get_from().equals(account.getUsername()+"@"+account.getSmtpAddress())) {
-					messagesDTO.add(new MessageDTO(myMessage));
-				}
-			}
-		}
-		if(messages.size()!=0) {
-			System.out.println("\n\nSaljem poruku sa Id-om: "+messages.get(messages.size()-1).getId()+"<<--------------------------\n");
-		}*/
 		
 		return new ResponseEntity<List<ContactDTO>>(contactsDTO,HttpStatus.OK);
 	}
-	
-	/*@GetMapping
-	@RequestMapping(value="/messages/sent-messages/{username}")
-	public ResponseEntity<List<MessageDTO>> getSentMessages(@PathVariable("username") String username) throws MessagingException, IOException, ParseException{
-		System.out.println("Trazim poslate poruke...");
-		Account account=accountService.findByUsername(username.split("@")[0]);
-		System.out.println("\nUsername: "+account.getUsername());
-		List<MyMessage> messages= messageService.findAllSentMessage(username);
-		System.out.println("\n\n\n\nBroj poruka: "+messages.size());
-		List<MessageDTO> messagesDTO=new ArrayList<MessageDTO>();
-		for (MyMessage myMessage : messages) {
-			if(myMessage.isActive()) {
-				messagesDTO.add(new MessageDTO(myMessage));
-			}
-		}
-		if(messages.size()!=0) {
-			System.out.println("\n\nSaljem poruku sa Id-om: "+messages.get(messages.size()-1).getId()+"<<--------------------------\n");
-		}
-		
-		return new ResponseEntity<List<MessageDTO>>(messagesDTO,HttpStatus.OK);
-	}*/
 	
 	@GetMapping(value="/contacts/{username}/{id}")
 	public ResponseEntity<ContactDTO> getContact(@PathVariable("username") String username,@PathVariable("id") Integer id) throws ParseException{
@@ -110,22 +66,66 @@ public class ContactController {
 		return new ResponseEntity<ContactDTO>(new ContactDTO(contact), HttpStatus.OK);
 	}
 	
-	@PostMapping(consumes="application/json", value = "/contacts")
+	@PostMapping(consumes="application/json")
 	public ResponseEntity<ContactDTO> saveContact(@RequestBody ContactDTO contactDTO) throws ParseException{
 		System.out.println("\nPocetak kreiranja kontakta!<-------------------------\n");
-		//System.out.println("\nContent je: "+contactDTO.getContent()+"<-------------------------\n");
-		Account account=accountService.findByUsername(contactDTO.getDisplayName().split("@")[0]);
+		User user = userService.findByUsername(contactDTO.getUser());
 		Contact contact = new Contact();
 		contact.setFirstName(contactDTO.getFirstName());;
 		contact.setLastName(contactDTO.getLastName());
 		contact.setDisplayName(contactDTO.getDisplayName());
 		contact.setEmail(contactDTO.getEmail());;
 		contact.setNote(contactDTO.getNote());
-		
-		//SendMail.send(contact,account);
-	
+		contact.setUser(user);
+		contact.setActive(true);
 		contact = contactService.save(contact);
 		return new ResponseEntity<ContactDTO>(new ContactDTO(contact), HttpStatus.CREATED);	
+	}
+	
+	@PostMapping(value="/search", consumes="application/json")
+	public ResponseEntity<List<ResultData>> search(@RequestBody AdvancedQuery advancedQuery) throws Exception {
+		System.out.println("User: "+advancedQuery.getUser());
+		System.out.println("Field1: "+advancedQuery.getField1());
+		System.out.println("Value1: "+advancedQuery.getValue1());
+		System.out.println("Field2: "+advancedQuery.getField2());
+		System.out.println("Value2: "+advancedQuery.getValue2());
+		System.out.println("Operation: "+advancedQuery.getOperation());
+		Query query1;		
+		Query query2;
+		Query queryReciver;
+		BooleanQuery.Builder builder=new BooleanQuery.Builder();
+		if(!advancedQuery.getValue1().isEmpty() && !advancedQuery.getValue2().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
+
+			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", advancedQuery.getUser());	
+			query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
+			query2=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField2(), advancedQuery.getValue2());
+			
+			if(advancedQuery.getOperation().equalsIgnoreCase("AND")){
+				builder.add(queryReciver,BooleanClause.Occur.MUST);
+				builder.add(query1,BooleanClause.Occur.MUST);
+				builder.add(query2,BooleanClause.Occur.MUST);
+			}else if(advancedQuery.getOperation().equalsIgnoreCase("OR")){
+				builder.add(queryReciver,BooleanClause.Occur.MUST);
+				builder.add(query1,BooleanClause.Occur.SHOULD);
+				builder.add(query2,BooleanClause.Occur.SHOULD);
+			}
+			
+		}else if(!advancedQuery.getValue1().isEmpty()) {
+			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", advancedQuery.getUser());	
+			query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
+			builder.add(query1,BooleanClause.Occur.MUST);
+			builder.add(queryReciver,BooleanClause.Occur.MUST);
+		}else if(!advancedQuery.getValue2().isEmpty()) {
+			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", advancedQuery.getUser());	
+			query2=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField2(), advancedQuery.getValue2());
+			builder.add(query2,BooleanClause.Occur.MUST);
+			builder.add(queryReciver,BooleanClause.Occur.MUST);
+		}
+		
+		Query query = builder.build();
+		List<ResultData> results = ResultRetriever.getResults(query);
+		
+		return new ResponseEntity<List<ResultData>>(results, HttpStatus.OK);
 	}
 	
 	@PutMapping(value="/contacts/{id}", consumes="application/json")

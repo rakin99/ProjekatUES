@@ -8,6 +8,7 @@ var createMessage = false;
 var showOneMessage = false;
 var messages = [];
 var load = true;
+var showFormAddContact = false;
 //var roles;
 
 // funkcija za logovanje
@@ -174,7 +175,7 @@ function sendMessage() {
 		data : messageJSON,
 	    contentType:"application/json; charset=utf-8",
 	    dataType:"json",
-	    headers: {'Authorization': 'Bearer ' + localStorage.getItem('jwt')}, // saljemo token u Authorization header-u gde ga serverska strana ocekuje
+	   // headers: {'Authorization': 'Bearer ' + localStorage.getItem('jwt')}, // saljemo token u Authorization header-u gde ga serverska strana ocekuje
 	    complete: function(data)
 	    {
 	    	console.log(data);
@@ -396,7 +397,7 @@ function getMessages() {
 						'<tr>' +  
 							'<td>' + messages[it].fromSender + '</td>' + 
 							'<td>' + messages[it].toReciver + '</td>' +
-							'<td> <div onClick="getMessageById(\''+messages[it].id+'\')">' + messages[it].subject + "</div></td>" +
+							'<td> <div class="btn btn-link" onClick="getMessageById(\''+messages[it].id+'\')">' + messages[it].subject + "</div></td>" +
 							'<td>' + messages[it].content.substring(0,30) + "..." + '</td>' +
 						'</tr>'
 								)	
@@ -459,7 +460,9 @@ function getAllAccounts() {
 
 function timer(){
 	load = false;
+	
 	if(showMessages){
+		$('#oneMessage').hide();
 		// Set the date we're counting down to
 		var year = new Date().getFullYear();
 		var month = new Date().getMonth();
@@ -547,7 +550,7 @@ function searchMessages(){
 					"<tr>" +
 						"<td>" + result.fromSender + "</td>" +
 						"<td>" + result.toReciver + "</td>" +
-						'<td> <div onClick="getMessageById(\''+result.id+'\')">' + result.subject + "</div></td>" +
+						'<td> <div class="btn btn-link" onClick="getMessageById(\''+result.id+'\')">' + result.subject + "</div></td>" +
 						"<td>" + result.content.substring(0, 30) + "..." + "</td>" +
 					"</tr>"
 					);
@@ -575,7 +578,7 @@ function showTableForMessages(){
 			'<tr>' +  
 				'<td>' + messages[it].fromSender + '</td>' + 
 				'<td>' + messages[it].toReciver + '</td>' +
-				'<td>' + messages[it].subject + '</td>' +
+				'<td> <div class="btn btn-link" onClick="getMessageById(\''+messages[it].id+'\')">' + messages[it].subject + "</div></td>" +
 				'<td>' + messages[it].content.substring(0,30) + "..." + '</td>' +
 			'</tr>'
 					)	
@@ -619,7 +622,7 @@ function getMessageById(id){
 	});
 	$.ajax({
         type: "POST",
-        url: "messages/search",
+        url: "messages/search-by-id",
         data: data,
         contentType: 'application/json',
         success: function (data) {
@@ -651,4 +654,52 @@ function getMessageById(id){
 
         }
     });
+}
+
+function submitContact(){
+	var firstName=$("#firstNameContact");
+	var lastName=$("#lastNameContact");
+	var displayName=$("#displayNameContact");
+	var email=$("#emailContact");
+	var note=$("#noteContact");
+	var data = JSON.stringify({
+		"firstName":firstName.val(),
+		"lastName":lastName.val(),
+		"displayName":displayName.val(),
+		"email":email.val(),
+		"note":note.val(),
+		"user":username
+	});
+	$.ajax({
+        type: "POST",
+        url: "/contacts",
+        data: data,
+        contentType: 'application/json',
+        complete: function(data)
+	    {
+	    	console.log(data);
+				if(data.status == 201){
+					alert("You have successfully create the contact!");
+					firstName.val("");
+					lastName.val("");
+					displayName.val("");
+					email.val("");
+					note.val("");
+				}
+				else {
+					alert("The contact was not create!");
+				}
+	    }
+    });
+}
+
+function showCreateContact(){
+	var createContact=$('#createContact');
+	showFormAddContact=!showFormAddContact;
+	if(showFormAddContact==false){
+		createContact.hide();
+	}
+	else if(showFormAddContact==true){
+		createContact.show();
+	}
 }
