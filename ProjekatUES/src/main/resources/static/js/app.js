@@ -391,6 +391,7 @@ function getMessages() {
 	if(load){
 		loading.show();
 	}
+	load=true;
 	$.ajax({
 	    url : '/messages/'+selectMessages+"/"+username,
 	    type: 'GET',
@@ -559,7 +560,6 @@ function searchMessages(){
 	}
 	console.log(JSON.stringify(filters))
 	var data = JSON.stringify(filters);
-	loading.show();
 	$.ajax({
         type: "POST",
         url: "messages/search",

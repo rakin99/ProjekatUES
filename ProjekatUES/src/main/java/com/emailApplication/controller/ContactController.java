@@ -99,12 +99,12 @@ public class ContactController {
 		Query queryReciver;
 		BooleanQuery.Builder builder=new BooleanQuery.Builder();
 		for (AdvancedQuery advancedQuery : listAdvancedQuery) {
-			System.out.println("Pertraga kontakata!");
-			System.out.println("User: "+advancedQuery.getUser());
-			System.out.println("Field: "+advancedQuery.getField());
-			System.out.println("Value: "+advancedQuery.getValue());
-			System.out.println("Operation: "+advancedQuery.getOperation());
 			if(!advancedQuery.getValue().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
+				System.out.println("Pertraga kontakata!");
+				System.out.println("User: "+advancedQuery.getUser());
+				System.out.println("Field: "+advancedQuery.getField());
+				System.out.println("Value: "+advancedQuery.getValue());
+				System.out.println("Operation: "+advancedQuery.getOperation());
 
 				queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
 				query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField(), advancedQuery.getValue());
@@ -117,11 +117,6 @@ public class ContactController {
 					builder.add(query1,BooleanClause.Occur.SHOULD);
 				}
 				
-			}else if(!advancedQuery.getValue().isEmpty()) {
-				queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
-				query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField(), advancedQuery.getValue());		
-				builder.add(query1,BooleanClause.Occur.MUST);
-				builder.add(queryReciver,BooleanClause.Occur.MUST);
 			}	
 		}
 		

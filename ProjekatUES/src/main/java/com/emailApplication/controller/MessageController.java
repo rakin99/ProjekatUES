@@ -191,12 +191,12 @@ public class MessageController {
 		BooleanQuery.Builder builder=new BooleanQuery.Builder();
 		List<Account> accounts = accountService.findByUser(userService.findByUsername(listAdvancedQuery.get(0).getUser()));
 		for (AdvancedQuery advancedQuery : listAdvancedQuery) {
-			System.out.println("User: "+advancedQuery.getUser());
-			System.out.println("Field1: "+advancedQuery.getField());
-			System.out.println("Value1: "+advancedQuery.getValue());
-			System.out.println("Operation: "+advancedQuery.getOperation());
 			for (Account account : accounts) {
 				if(account.isActive()) {
+					System.out.println("User: "+advancedQuery.getUser());
+					System.out.println("Field1: "+advancedQuery.getField());
+					System.out.println("Value1: "+advancedQuery.getValue());
+					System.out.println("Operation: "+advancedQuery.getOperation());
 					if(!advancedQuery.getValue().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
 
 						queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", account.getDisplayname());	
@@ -210,11 +210,6 @@ public class MessageController {
 							builder.add(query1,BooleanClause.Occur.SHOULD);
 						}
 						
-					}else if(!advancedQuery.getValue().isEmpty()) {
-						queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", account.getDisplayname());	
-						query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField(), advancedQuery.getValue());		
-						builder.add(query1,BooleanClause.Occur.MUST);
-						builder.add(queryReciver,BooleanClause.Occur.MUST);
 					}
 				}
 			}
