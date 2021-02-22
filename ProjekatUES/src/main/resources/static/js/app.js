@@ -8,10 +8,12 @@ var createMessage = false;
 var showOneMessage = false;
 var messages = [];
 var load = true;
+var loadContacts = true;
 var showFormAddContact = false;
 var allContacts = false;
 var counter = 1;
-var fields = [];
+var fieldsContacts = [];
+var fieldsMessages = [];
 //var roles;
 
 // funkcija za logovanje
@@ -368,10 +370,21 @@ function showMessagesTable(){
 		oneMessage.hide()
 	}else{
 		meessagesTable.hide();
+		$('#searchMessages').hide();
 	}
 }
 
 function getMessages() {
+	var inputField = 'inputFieldMessage1';
+	var inputOperation = 'inputOperationMessage1';
+	var inputValue = 'inputValueMessage1';
+	var field = {
+					'id':1,
+					'field':inputField,
+					'value':inputValue,
+					'operation':inputOperation
+				}
+	fieldsMessages.push(field);
 	var loading = $('#loading');
 	var meessagesTable = $('#messagesTable');
 	var selectMessages = $('#selectMessages').val();
@@ -387,7 +400,8 @@ function getMessages() {
 	    {
 			meessagesTable.find('tr:gt(1)').remove();
 			loading.hide();
-			meessagesTable.show();			
+			meessagesTable.show();
+			$('#searchMessages').show();			
 			//console.log(data)
 			messages = data;
 			//console.log(messages.length)
@@ -473,7 +487,7 @@ function timer(){
 		var day = new Date().getDate();
 		var h= new Date().getHours();
 		var m= new Date().getMinutes();
-		var s= new Date().getSeconds()+10;
+		var s= new Date().getSeconds()+20;
 		var countDownDate = new Date(year,month,day,h,m,s).getTime();
 
 		// Update the count down every 1 second
@@ -524,19 +538,27 @@ function getAccountsForSelect(){
 function searchMessages(){
 	showMessages=false;
 	var loading = $('#loading');
-	var inputValue1 = $('#inputValue1').val();
-	var inputField1 = $('#inputField1').val();
-	var inputValue2 = $('#inputValue2').val();
-	var inputField2 = $('#inputField2').val();
-	var inputOperation = $('#inputOperation').val();
-	var data = JSON.stringify({
-		"user":username,
-		"field1":inputField1,
-		"value1":inputValue1,
-		"field2":inputField2,
-		"value2":inputValue2,
-		"operation":inputOperation
-	});
+	var filters = [];
+	for (let index = 0; index < fieldsMessages.length; index++) {
+		const element = fieldsMessages[index];
+		if(!element.field.includes("Contacts")){
+			var field = $('#'+element.field).val();
+			var value = $('#'+element.value).val();
+			var operation = $('#'+element.operation).val();
+			console.log("\n\tField: "+field);
+			if(field!=undefined && value!=undefined && operation!=undefined){
+				var filter = {
+					"user":username,
+					"field":field,
+					"value":value,
+					"operation":operation
+				}
+				filters.push(filter);
+			}
+		}
+	}
+	console.log(JSON.stringify(filters))
+	var data = JSON.stringify(filters);
 	loading.show();
 	$.ajax({
         type: "POST",
@@ -710,18 +732,22 @@ function showCreateContact(){
 
 function getAllContacts(){
 	var contactsTable = $('#contactsTable');
-	var inputField = 'inputFieldContacts'+counter;
-	var inputOperation = 'inputOperationContacts'+counter;
-	var inputValue = 'inputValueContacts'+counter;
+	var inputField = 'inputFieldContacts1';
+	var inputOperation = 'inputOperationContacts1';
+	var inputValue = 'inputValueContacts1';
 	var field = {
-					'id':counter,
+					'id':1,
 					'field':inputField,
 					'value':inputValue,
 					'operation':inputOperation
 				}
-	fields.push(field);
+	fieldsContacts.push(field);
 	allContacts=!allContacts;
 	if(allContacts){
+		var loadingContacts = $('#loadingContacts');
+		if(loadContacts){
+			loadingContacts.show();
+		}
 		$.ajax({
 			url : 'contacts/'+username,
 			type: 'GET',
@@ -729,6 +755,7 @@ function getAllContacts(){
 			dataType:"json",
 			success: function(data)
 			{
+				loadingContacts.hide();
 				if(data.length==0){
 					alert("There are no contacts yet!");
 				}else{
@@ -766,20 +793,29 @@ function getAllContacts(){
 
 function searchContacts(){
 	var filters = [];
-	for (let index = 0; index < fields.length; index++) {
-		const element = fields[index];
-		var field = $('#'+element.field).val();
-		var value = $('#'+element.value).val();
-		var operation = $('#'+element.operation).val();
-		var filter = {
-			"user":username,
-			"field":field,
-			"value":value,
-			"operation":operation
+	for (let index = 0; index < fieldsContacts.length; index++) {
+		const element = fieldsContacts[index];
+		if(!element.field.includes("Message")){
+			var field = $('#'+element.field).val();
+			var value = $('#'+element.value).val();
+			var operation = $('#'+element.operation).val();
+			console.log("\n\tField: "+field);
+			if(field!=undefined && value!=undefined && operation!=undefined){
+				var filter = {
+					"user":username,
+					"field":field,
+					"value":value,
+					"operation":operation
+				}
+				filters.push(filter);
+			}
 		}
-		filters.push(filter);
 	}
 	console.log(JSON.stringify(filters))
+	var loadingContacts = $('#loadingContacts');
+	if(loadContacts){
+		loadingContacts.show();
+	}
 	var data = JSON.stringify(filters);
 	$.ajax({
         type: "POST",
@@ -788,6 +824,7 @@ function searchContacts(){
         contentType: 'application/json',
         success: function (data) {
 			contacts = data;
+			loadingContacts.hide();
         	$('#contactsTable').find('tr:gt(1)').remove();
             for(index = 0; index < contacts.length; index++){
                 var result = contacts[index];
@@ -814,7 +851,54 @@ function searchContacts(){
     });
 }
 
-// add row
+// add row for Messages
+function addRowMessages() {
+	counter = counter + 1;
+	var inputField = 'inputFieldMessage'+counter;
+	var inputOperation = 'inputOperationMessage'+counter;
+	var inputValue = 'inputValueMessage'+counter;
+	var field = {
+					'id':counter,
+					'field':inputField,
+					'value':inputValue,
+					'operation':inputOperation
+				}
+	fieldsMessages.push(field);
+	var html = '';
+	html += '<div id="inputFormRowMessage">';
+	html += '<input type="hidden" value="' + counter + '">';
+	html += '<div class="input-group mb-3">';
+	html += '<label style="padding-right: 5px;">Search by:';
+	html += '<select class="form-control m-input" id="' + inputField + '">';
+	html += '<option value="subject">Subject</option>';
+	html += '<option value="content">Content</option>';
+	html += '<option value="fromSender">Sender</option>';
+	html += '<option value="toReciver">Reciver</option>';
+	html += '<option value="attachment_content">Attachment</option>';
+	html += '</select>';
+	html += '</label>';
+	html += '<label style="padding-right: 5px;">Operation:';
+	html += '<select class="form-control m-input" id="' + inputOperation + '">';
+	html += '<option value="and">AND</option>';
+	html += '<option value="or">OR</option>';
+	html += '</select>';
+	html += '</label>';
+	html += '<label style="padding-right: 5px;">Search value:';
+	html += '<input id="' + inputValue + '" class="form-control m-input"/>';
+	html += '</label>';
+	html += '<label style="padding-top: 24px;">';
+	html += '<div class="input-group-append">';
+	html += '<button id="removeRowMessages" type="button" class="btn btn-danger">Remove</button>';
+	html += '</div>';
+	html += '</label>';
+	html += '</div>';
+	html += '</div>';
+
+	$('#newRowMessages').append(html);
+	console.log("Fields: "+JSON.stringify(fieldsMessages))
+}
+
+// add row for Contacts
 function addRowContacts() {
 	counter = counter + 1;
 	var inputField = 'inputFieldContacts'+counter;
@@ -826,9 +910,9 @@ function addRowContacts() {
 					'value':inputValue,
 					'operation':inputOperation
 				}
-	fields.push(field);
+	fieldsContacts.push(field);
 	var html = '';
-	html += '<div id="inputFormRow">';
+	html += '<div id="inputFormRowContacts">';
 	html += '<input type="hidden" value="' + counter + '">';
 	html += '<div class="input-group mb-3">';
 	html += '<label style="padding-right: 5px;">Search by:';
@@ -849,25 +933,38 @@ function addRowContacts() {
 	html += '</label>';
 	html += '<label style="padding-top: 24px;">';
 	html += '<div class="input-group-append">';
-	html += '<button id="removeRow" type="button" class="btn btn-danger">Remove</button>';
+	html += '<button id="removeRowContacts" type="button" class="btn btn-danger">Remove</button>';
 	html += '</div>';
 	html += '</label>';
 	html += '</div>';
 	html += '</div>';
 
-	$('#newRow').append(html);
-	//console.log("Fields: "+JSON.stringify(fields))
+	$('#newRowContacts').append(html);
+	//console.log("Fields: "+JSON.stringify(fieldsContacts))
 }
 
-// remove row
-$(document).on('click', '#removeRow', function () {
-	var id = $(this).closest('#inputFormRow').children()[0].value;
-	for (let index = 0; index < fields.length; index++) {
-		const element = fields[index];
+// remove row from Contacts
+$(document).on('click', '#removeRowContacts', function () {
+	var id = $(this).closest('#inputFormRowContacts').children()[0].value;
+	for (let index = 0; index < fieldsContacts.length; index++) {
+		const element = fieldsContacts[index];
 		if(id==element.id){
-			fields.splice(index, 1);
+			fieldsContacts.splice(index, 1);
 		}
 	}
-	//console.log("Fields: "+JSON.stringify(fields));
-	$(this).closest('#inputFormRow').remove();
+	console.log("Fields: "+JSON.stringify(fieldsContacts));
+	$(this).closest('#inputFormRowContacts').remove();
+});
+
+// remove row from Messages
+$(document).on('click', '#removeRowMessages', function () {
+	var id = $(this).closest('#inputFormRowMessage').children()[0].value;
+	for (let index = 0; index < fieldsMessages.length; index++) {
+		const element = fieldsMessages[index];
+		if(id==element.id){
+			fieldsMessages.splice(index, 1);
+		}
+	}
+	console.log("Fields: "+JSON.stringify(fieldsMessages));
+	$(this).closest('#inputFormRowMessage').remove();
 });

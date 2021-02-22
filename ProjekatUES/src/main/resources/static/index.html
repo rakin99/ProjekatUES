@@ -158,49 +158,54 @@
 		<!-- Get messages  -->
 		<div class="card" id="messagesForm">
 			<div class="card-body">
-			  <button type="button" onclick="showMessagesTable()" class="btn btn-primary">Get Messages</button>
+			<button type="button" onclick="showMessagesTable()" class="btn btn-primary">Get Messages</button>
+			<div class="row" style="display:none; padding-top: 10px;" id="searchMessages">
+				<div class="col-lg-12">
+					<label>Messages displayed:
+						<select onchange="getMessages()" class="form-control" id="selectMessages">
+							<option value="recived-messages">recived messages</option>
+							<option value="sent-messages">sent messages</option>
+						</select>
+					</label>
+					<div id="inputFormRowMessage">
+						<input type="hidden" value="1">
+						<div class="input-group mb-3">
+							<label style="padding-right: 5px;">Search by:
+								<select class="form-control m-input" id="inputFieldMessage1">
+									<option value="subject">Subject</option>
+									<option value="content">Content</option>
+									<option value="fromSender">Sender</option>
+									<option value="toReciver">Reciver</option>
+									<option value="attachment_content">Attachment</option>
+								</select>
+							</label>
+							<label style="padding-right: 5px;">Operation:
+								<select class="form-control m-input" id="inputOperationMessage1">
+									<option value="and">AND</option>
+									<option value="or">OR</option>
+								</select>
+							</label>
+							<label style="padding-right: 5px;">Search value:
+								<input id="inputValueMessage1" class="form-control m-input"/>
+							</label>
+							<label style="padding-top: 24px;">
+								<div class="input-group-append">                
+									<button id="removeRowMessages" type="button" class="btn btn-danger">Remove</button>
+								</div>
+							</label>
+						</div>
+					</div>
+					<div id="newRowMessages"></div>
+					<div style="float: right;">
+						<button id="addRowMessage" type="button" onclick="addRowMessages()" class="btn btn-info">Add Row</button>
+						<button type="button" onclick="searchMessages()" class="btn btn-primary">Search</button>
+					</div>
+				</div>
+			</div>
+			<br/>
 			  <div class="loader" style="display:none;" id="loading"></div>
 			  <table class="table" id="messagesTable" style="display:none;">
 				  <thead class="black white-text">
-					  <tr>
-						  <th>
-							<label>Messages displayed:</label>
-							<select onchange="getMessages()" class="form-control" id="selectMessages">
-								<option value="recived-messages">recived messages</option>
-								<option value="sent-messages">sent messages</option>
-							</select>
-						  </th>
-						  <th>
-							<label>Search by:</label>
-							<select class="form-control" id="inputField1">
-								<option value="subject">Subject</option>
-								<option value="content">Content</option>
-								<option value="fromSender">Sender</option>
-								<option value="toReciver">Reciver</option>
-								<option value="attachment_content">Attachment</option> <br/>
-								<input placeholder="Search value..." id="inputValue1" class="form-control"/>
-							</select>
-						  </th>
-						  <th>
-							<label>Search by:</label>
-							<select class="form-control" id="inputField2">
-								<option value="subject">Subject</option>
-								<option value="content">Content</option>
-								<option value="fromSender">Sender</option>
-								<option value="toReciver">Reciver</option>
-								<option value="attachment_content">Attachment</option> <br/>
-								<input placeholder="Search value..." id="inputValue2" class="form-control"/>
-							</select>
-						  </th>
-						  <th>
-							<label>Operation:</label>
-							<select class="form-control" id="inputOperation">
-							  <option value="and">AND</option>
-							  <option value="or">OR</option>
-							</select>
-							<button type="button" onclick="searchMessages()" class="btn btn-primary">Search</button>
-						  </th>
-					  </tr>
 					  <tr>
 						  <th><div class="btn btn-light" onclick="ElementForSort('from')" id="idFrom">From</div></th>
 						  <th><div class="btn btn-light" onclick="ElementForSort('to')" id="idTo">To</div></th>
@@ -298,7 +303,7 @@
 				<button type="button" onclick="getAllContacts()" class="btn btn-primary">Get All Contacts</button>
 				<div class="row" style="display:none; padding-top: 10px;" id="searchContacts">
 					<div class="col-lg-12">
-						<div id="inputFormRow">
+						<div id="inputFormRowContacts">
 							<input type="hidden" value="1">
 							<div class="input-group mb-3">
 								<label style="padding-right: 5px;">Search by:
@@ -319,19 +324,20 @@
 								</label>
 								<label style="padding-top: 24px;">
 									<div class="input-group-append">                
-										<button id="removeRow" type="button" class="btn btn-danger">Remove</button>
+										<button id="removeRowContacts" type="button" class="btn btn-danger">Remove</button>
 									</div>
 								</label>
 							</div>
 						</div>
-						<div id="newRow"></div>
+						<div id="newRowContacts"></div>
 						<div style="float: right;">
-							<button id="addRow" type="button" onclick="addRowContacts()" class="btn btn-info">Add Row</button>
+							<button id="addRowContacts" type="button" onclick="addRowContacts()" class="btn btn-info">Add Row</button>
 							<button type="button" onclick="searchContacts()" class="btn btn-primary">Search</button>
 						</div>
 					</div>
 				</div>
 				<br/>
+				<div class="loader" style="display:none;" id="loadingContacts"></div>
 				<table class="table" id="contactsTable" style="display:none;">
 					<thead class="black white-text">
 						<tr>
