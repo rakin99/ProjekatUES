@@ -3,9 +3,9 @@ package com.emailApplication.lucene.model;
 public class AdvancedQuery {
 	
 	private String user;
-	private String field1;
-	private String value1;
-	private String operation1;
+	private String field;
+	private String value;
+	private String operation;
 	
 	public AdvancedQuery() {
 		super();
@@ -16,24 +16,29 @@ public class AdvancedQuery {
 	public void setUser(String user) {
 		this.user = user;
 	}
-	public String getField1() {
-		return field1;
+	public String getField() {
+		return field;
 	}
-	public void setField1(String field1) {
-		this.field1 = field1;
+	public void setField(String field1) {
+		this.field = field1;
 	}
-	public String getValue1() {
-		return value1;
+	public String getValue() {
+		return value;
 	}
-	public void setValue1(String value1) {
-		this.value1 = value1;
+	public void setValue(String value1) {
+		this.value = value1;
 	}
 	
-	public String getOperation1() {
-		return operation1;
+	public String getOperation() {
+		return operation;
 	}
-	public void setOperation1(String operation) {
-		this.operation1 = operation;
+	public void setOperation(String operation) {
+		this.operation = operation;
+	}
+	@Override
+	public String toString() {
+		return "AdvancedQuery [user=" + user + ", field=" + field + ", value=" + value + ", operation=" + operation
+				+ "]";
 	}
 
 }

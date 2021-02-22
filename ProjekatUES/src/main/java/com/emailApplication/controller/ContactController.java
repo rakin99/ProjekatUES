@@ -94,33 +94,35 @@ public class ContactController {
 	}
 	
 	@PostMapping(value="/search", consumes="application/json")
-	public ResponseEntity<List<ContactRD>> search(@RequestBody AdvancedQuery advancedQuery) throws Exception {
-		System.out.println("Pertraga kontakata!");
-		System.out.println("User: "+advancedQuery.getUser());
-		System.out.println("Field1: "+advancedQuery.getField1());
-		System.out.println("Value1: "+advancedQuery.getValue1());
-		System.out.println("Operation1: "+advancedQuery.getOperation1());
+	public ResponseEntity<List<ContactRD>> search(@RequestBody ArrayList<AdvancedQuery> listAdvancedQuery) throws Exception {
 		Query query1;	
 		Query queryReciver;
 		BooleanQuery.Builder builder=new BooleanQuery.Builder();
-		if(!advancedQuery.getValue1().isEmpty() && !advancedQuery.getOperation1().isEmpty()) {
+		for (AdvancedQuery advancedQuery : listAdvancedQuery) {
+			System.out.println("Pertraga kontakata!");
+			System.out.println("User: "+advancedQuery.getUser());
+			System.out.println("Field: "+advancedQuery.getField());
+			System.out.println("Value: "+advancedQuery.getValue());
+			System.out.println("Operation: "+advancedQuery.getOperation());
+			if(!advancedQuery.getValue().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
 
-			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
-			query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());
-			
-			if(advancedQuery.getOperation1().equalsIgnoreCase("AND")){
-				builder.add(queryReciver,BooleanClause.Occur.MUST);
+				queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
+				query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField(), advancedQuery.getValue());
+				
+				if(advancedQuery.getOperation().equalsIgnoreCase("AND")){
+					builder.add(queryReciver,BooleanClause.Occur.MUST);
+					builder.add(query1,BooleanClause.Occur.MUST);
+				}else if(advancedQuery.getOperation().equalsIgnoreCase("OR")){
+					builder.add(queryReciver,BooleanClause.Occur.MUST);
+					builder.add(query1,BooleanClause.Occur.SHOULD);
+				}
+				
+			}else if(!advancedQuery.getValue().isEmpty()) {
+				queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
+				query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField(), advancedQuery.getValue());		
 				builder.add(query1,BooleanClause.Occur.MUST);
-			}else if(advancedQuery.getOperation1().equalsIgnoreCase("OR")){
 				builder.add(queryReciver,BooleanClause.Occur.MUST);
-				builder.add(query1,BooleanClause.Occur.SHOULD);
-			}
-			
-		}else if(!advancedQuery.getValue1().isEmpty()) {
-			queryReciver=QueryBuilder.buildQuery(SearchType.regular, "user", '"'+advancedQuery.getUser()+'"');	
-			query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
-			builder.add(query1,BooleanClause.Occur.MUST);
-			builder.add(queryReciver,BooleanClause.Occur.MUST);
+			}	
 		}
 		
 		Query query = builder.build();

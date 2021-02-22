@@ -734,7 +734,7 @@ function getAllContacts(){
 				}else{
 					//console.log("Porsao sam u elese i data je: "+JSON.stringify(data));
 					contactsTable.find('tr:gt(1)').remove();
-					$('#searchContacts').show()
+					$('#searchContacts').show();
 					contactsTable.show();
 					var contacts = data;
 					for (it in contacts) {
@@ -760,19 +760,27 @@ function getAllContacts(){
 	}
 	else{
 		contactsTable.hide();
+		$('#searchContacts').hide();
 	}
 }
 
 function searchContacts(){
-	var inputValue1 = $('#inputValueContacts1').val();
-	var inputField1 = $('#inputFieldContacts1').val();
-	var inputOperation = $('#inputOperationContacts').val();
-	var data = JSON.stringify({
-		"user":username,
-		"field1":inputField1,
-		"value1":inputValue1,
-		"operation1":inputOperation
-	});
+	var filters = [];
+	for (let index = 0; index < fields.length; index++) {
+		const element = fields[index];
+		var field = $('#'+element.field).val();
+		var value = $('#'+element.value).val();
+		var operation = $('#'+element.operation).val();
+		var filter = {
+			"user":username,
+			"field":field,
+			"value":value,
+			"operation":operation
+		}
+		filters.push(filter);
+	}
+	console.log(JSON.stringify(filters))
+	var data = JSON.stringify(filters);
 	$.ajax({
         type: "POST",
         url: "contacts/search",
@@ -807,7 +815,7 @@ function searchContacts(){
 }
 
 // add row
-function addRow() {
+function addRowContacts() {
 	counter = counter + 1;
 	var inputField = 'inputFieldContacts'+counter;
 	var inputOperation = 'inputOperationContacts'+counter;
@@ -848,15 +856,18 @@ function addRow() {
 	html += '</div>';
 
 	$('#newRow').append(html);
+	//console.log("Fields: "+JSON.stringify(fields))
 }
 
 // remove row
 $(document).on('click', '#removeRow', function () {
 	var id = $(this).closest('#inputFormRow').children()[0].value;
-	
-	for (let index = 1; index < fields.length; index++) {
+	for (let index = 0; index < fields.length; index++) {
 		const element = fields[index];
-		console.log(element.id)
+		if(id==element.id){
+			fields.splice(index, 1);
+		}
 	}
+	//console.log("Fields: "+JSON.stringify(fields));
 	$(this).closest('#inputFormRow').remove();
 });
