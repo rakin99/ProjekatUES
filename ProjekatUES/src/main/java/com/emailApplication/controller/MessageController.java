@@ -190,40 +190,30 @@ public class MessageController {
 		System.out.println("User: "+advancedQuery.getUser());
 		System.out.println("Field1: "+advancedQuery.getField1());
 		System.out.println("Value1: "+advancedQuery.getValue1());
-		System.out.println("Field2: "+advancedQuery.getField2());
-		System.out.println("Value2: "+advancedQuery.getValue2());
-		System.out.println("Operation: "+advancedQuery.getOperation());
+		System.out.println("Operation: "+advancedQuery.getOperation1());
 		Query query1;		
 		Query query2;
 		Query queryReciver;
 		BooleanQuery.Builder builder=new BooleanQuery.Builder();
 		for (Account account : accounts) {
 			if(account.isActive()) {
-				if(!advancedQuery.getValue1().isEmpty() && !advancedQuery.getValue2().isEmpty() && !advancedQuery.getOperation().isEmpty()) {
+				if(!advancedQuery.getValue1().isEmpty() && !advancedQuery.getOperation1().isEmpty()) {
 
 					queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", account.getDisplayname());	
-					query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
-					query2=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField2(), advancedQuery.getValue2());
+					query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());
 					
-					if(advancedQuery.getOperation().equalsIgnoreCase("AND")){
+					if(advancedQuery.getOperation1().equalsIgnoreCase("AND")){
 						builder.add(queryReciver,BooleanClause.Occur.MUST);
 						builder.add(query1,BooleanClause.Occur.MUST);
-						builder.add(query2,BooleanClause.Occur.MUST);
-					}else if(advancedQuery.getOperation().equalsIgnoreCase("OR")){
+					}else if(advancedQuery.getOperation1().equalsIgnoreCase("OR")){
 						builder.add(queryReciver,BooleanClause.Occur.MUST);
 						builder.add(query1,BooleanClause.Occur.SHOULD);
-						builder.add(query2,BooleanClause.Occur.SHOULD);
 					}
 					
 				}else if(!advancedQuery.getValue1().isEmpty()) {
 					queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", account.getDisplayname());	
 					query1=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField1(), advancedQuery.getValue1());		
 					builder.add(query1,BooleanClause.Occur.MUST);
-					builder.add(queryReciver,BooleanClause.Occur.MUST);
-				}else if(!advancedQuery.getValue2().isEmpty()) {
-					queryReciver=QueryBuilder.buildQuery(SearchType.regular, "toReciver", account.getDisplayname());	
-					query2=QueryBuilder.buildQuery(SearchType.fuzzy, advancedQuery.getField2(), advancedQuery.getValue2());
-					builder.add(query2,BooleanClause.Occur.MUST);
 					builder.add(queryReciver,BooleanClause.Occur.MUST);
 				}
 			}

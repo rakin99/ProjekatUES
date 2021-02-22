@@ -10,6 +10,8 @@ var messages = [];
 var load = true;
 var showFormAddContact = false;
 var allContacts = false;
+var counter = 1;
+var fields = [];
 //var roles;
 
 // funkcija za logovanje
@@ -360,6 +362,7 @@ function showMessagesTable(){
 	load = true;
 	showMessages=!showMessages;
 	if(showMessages){
+		
 		getMessages();
 		timer();
 		oneMessage.hide()
@@ -707,6 +710,16 @@ function showCreateContact(){
 
 function getAllContacts(){
 	var contactsTable = $('#contactsTable');
+	var inputField = 'inputFieldContacts'+counter;
+	var inputOperation = 'inputOperationContacts'+counter;
+	var inputValue = 'inputValueContacts'+counter;
+	var field = {
+					'id':counter,
+					'field':inputField,
+					'value':inputValue,
+					'operation':inputOperation
+				}
+	fields.push(field);
 	allContacts=!allContacts;
 	if(allContacts){
 		$.ajax({
@@ -721,6 +734,7 @@ function getAllContacts(){
 				}else{
 					//console.log("Porsao sam u elese i data je: "+JSON.stringify(data));
 					contactsTable.find('tr:gt(1)').remove();
+					$('#searchContacts').show()
 					contactsTable.show();
 					var contacts = data;
 					for (it in contacts) {
@@ -750,18 +764,14 @@ function getAllContacts(){
 }
 
 function searchContacts(){
-	var inputValue1 = $('#inputValue1Contacts').val();
-	var inputField1 = $('#inputField1Contacts').val();
-	var inputValue2 = $('#inputValue2Contacts').val();
-	var inputField2 = $('#inputField2Contacts').val();
+	var inputValue1 = $('#inputValueContacts1').val();
+	var inputField1 = $('#inputFieldContacts1').val();
 	var inputOperation = $('#inputOperationContacts').val();
 	var data = JSON.stringify({
 		"user":username,
 		"field1":inputField1,
 		"value1":inputValue1,
-		"field2":inputField2,
-		"value2":inputValue2,
-		"operation":inputOperation
+		"operation1":inputOperation
 	});
 	$.ajax({
         type: "POST",
@@ -778,7 +788,7 @@ function searchContacts(){
 					"<tr>" +
 						"<td>" + result.firstName + "</td>" +
 						"<td>" + result.lastName + "</td>" +
-						"<td>" + result.note + "</td>" +
+						"<td>" + result.email + "</td>" +
 					"</tr>"
 					);
             }
@@ -795,3 +805,58 @@ function searchContacts(){
         }
     });
 }
+
+// add row
+function addRow() {
+	counter = counter + 1;
+	var inputField = 'inputFieldContacts'+counter;
+	var inputOperation = 'inputOperationContacts'+counter;
+	var inputValue = 'inputValueContacts'+counter;
+	var field = {
+					'id':counter,
+					'field':inputField,
+					'value':inputValue,
+					'operation':inputOperation
+				}
+	fields.push(field);
+	var html = '';
+	html += '<div id="inputFormRow">';
+	html += '<input type="hidden" value="' + counter + '">';
+	html += '<div class="input-group mb-3">';
+	html += '<label style="padding-right: 5px;">Search by:';
+	html += '<select class="form-control m-input" id="' + inputField + '">';
+	html += '<option value="firstName">First name</option>';
+	html += '<option value="lastName">Last name</option>';
+	html += '<option value="note">Note</option>';
+	html += '</select>';
+	html += '</label>';
+	html += '<label style="padding-right: 5px;">Operation:';
+	html += '<select class="form-control m-input" id="' + inputOperation + '">';
+	html += '<option value="and">AND</option>';
+	html += '<option value="or">OR</option>';
+	html += '</select>';
+	html += '</label>';
+	html += '<label style="padding-right: 5px;">Search value:';
+	html += '<input id="' + inputValue + '" class="form-control m-input"/>';
+	html += '</label>';
+	html += '<label style="padding-top: 24px;">';
+	html += '<div class="input-group-append">';
+	html += '<button id="removeRow" type="button" class="btn btn-danger">Remove</button>';
+	html += '</div>';
+	html += '</label>';
+	html += '</div>';
+	html += '</div>';
+
+	$('#newRow').append(html);
+}
+
+// remove row
+$(document).on('click', '#removeRow', function () {
+	var id = $(this).closest('#inputFormRow').children()[0].value;
+	
+	for (let index = 1; index < fields.length; index++) {
+		const element = fields[index];
+		console.log(element.id)
+	}
+	$(this).closest('#inputFormRow').remove();
+});

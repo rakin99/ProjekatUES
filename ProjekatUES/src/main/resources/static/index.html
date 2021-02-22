@@ -296,36 +296,44 @@
 		<div class="card" id="allAccountsForm">
 			<div class="card-body">
 				<button type="button" onclick="getAllContacts()" class="btn btn-primary">Get All Contacts</button>
+				<div class="row" style="display:none; padding-top: 10px;" id="searchContacts">
+					<div class="col-lg-12">
+						<div id="inputFormRow">
+							<input type="hidden" value="1">
+							<div class="input-group mb-3">
+								<label style="padding-right: 5px;">Search by:
+									<select class="form-control m-input" id="inputFieldContacts1">
+										<option value="firstName">First name</option>
+										<option value="lastName">Last name</option>
+										<option value="note">Note</option>
+									</select>
+								</label>
+								<label style="padding-right: 5px;">Operation:
+									<select class="form-control m-input" id="inputOperationContacts">
+										<option value="and">AND</option>
+										<option value="or">OR</option>
+									</select>
+								</label>
+								<label style="padding-right: 5px;">Search value:
+									<input id="inputValueContacts1" class="form-control m-input"/>
+								</label>
+								<label style="padding-top: 24px;">
+									<div class="input-group-append">                
+										<button id="removeRow" type="button" class="btn btn-danger">Remove</button>
+									</div>
+								</label>
+							</div>
+						</div>
+						<div id="newRow"></div>
+						<div style="float: right;">
+							<button id="addRow" type="button" onclick="addRow()" class="btn btn-info">Add Row</button>
+							<button type="button" onclick="searchContacts()" class="btn btn-primary">Search</button>
+						</div>
+					</div>
+				</div>
+				<br/>
 				<table class="table" id="contactsTable" style="display:none;">
 					<thead class="black white-text">
-						<tr>
-							<th>
-								<label>Search by:</label>
-								<select class="form-control" id="inputField1Contacts">
-									<option value="firstName">First name</option>
-									<option value="lastName">Last name</option>
-									<option value="note">Note</option>
-									<input placeholder="Search value..." id="inputValue1Contacts" class="form-control"/>
-								</select>
-							</th>
-							<th>
-								<label>Search by:</label>
-								<select class="form-control" id="inputField2Contacts">
-									<option value="firstName">First name</option>
-									<option value="lastName">Last name</option>
-									<option value="note">Note</option>
-									<input placeholder="Search value..." id="inputValue2Contacts" class="form-control"/>
-								</select>
-							  </th>
-							  <th>
-								<label>Operation:</label>
-								<select class="form-control" id="inputOperationContacts">
-								  <option value="and">AND</option>
-								  <option value="or">OR</option>
-								</select>
-								<button type="button" onclick="searchContacts()" class="btn btn-primary">Search</button>
-							</th>
-						</tr>
 						<tr>
 							<th>First name</th>
 							<th>Last name</th>

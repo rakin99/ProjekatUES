@@ -5,9 +5,7 @@ public class AdvancedQuery {
 	private String user;
 	private String field1;
 	private String value1;
-	private String field2;
-	private String value2;
-	private String operation;
+	private String operation1;
 	
 	public AdvancedQuery() {
 		super();
@@ -30,23 +28,12 @@ public class AdvancedQuery {
 	public void setValue1(String value1) {
 		this.value1 = value1;
 	}
-	public String getField2() {
-		return field2;
+	
+	public String getOperation1() {
+		return operation1;
 	}
-	public void setField2(String field2) {
-		this.field2 = field2;
-	}
-	public String getValue2() {
-		return value2;
-	}
-	public void setValue2(String value2) {
-		this.value2 = value2;
-	}
-	public String getOperation() {
-		return operation;
-	}
-	public void setOperation(String operation) {
-		this.operation = operation;
+	public void setOperation1(String operation) {
+		this.operation1 = operation;
 	}
 
 }
